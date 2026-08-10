@@ -1,650 +1,621 @@
 <!DOCTYPE html>
-<!-- saved from url=(0032)http://127.0.0.1:5500/index.html -->
-<html lang="vi"><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/content/location/location.js" id="eppiocemhmnlbhjplcgkofciiegomcon"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/extend-native-history-api.js"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/requests.js"></script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
-    <title>Play Music By Zind Doan</title>
-    <link rel="stylesheet" href="./Play Music By Zind Doan_files/style.css">
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVENT MUSIC CENTER // ZINH DOAN - AVL - NETWORK </title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        background: #f9f9f9;
-      }
-      h1 {
-        margin-top: 30px;
-      }
-      .pad-container {
-        display: grid;
-        grid-template-columns: repeat(6, 150px);
-        gap: 15px;
-        justify-content: center;
-        margin-top: 40px;
-      }
-      .pad-controls {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        /* flex-wrap: wrap; nếu muốn xuống hàng khi hẹp */
-        gap: 4px; /* khoảng cách giữa các nút */
-        margin-top: 5px;
-      }
-      .pad-controls .button-row {
-        display: flex;
-        justify-content: center;
-        gap: 6px;
-      }
-      .pad-controls button {
-        font-size: 12px;
-        padding: 4px 6px;
-      }
+<!-- Nút chuyển giao diện Sáng / Tối -->
+<button id="theme-toggle" class="theme-toggle-btn" title="Chuyển giao diện Sáng / Tối">🌙</button>
 
-      .pad-controls label {
-        margin-top: 5px;
-        font-size: 12px;
-        background: #444;
-        color: white;
-        padding: 4px 8px;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .pad-controls label input {
-        display: none; /* ẩn input file */
-      }
+<div class="wrap">
+  <header>
+    <h1>ZIT-Event Music <span>Center</span></h1>
+    <p>Dark Mode // Cyberpunk DJ Console For Event</p>
+  </header>
 
-      .pad {
-        background: #111;
-        display: flex;
-        align-content: center;
-        color: white;
-        border-radius: 6px;
-        padding: 20px 10px;
-        cursor: pointer;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        transition: 0.2s;
-        font: size 11px;
-        flex-direction: column;
-        justify-content: center;
-        user-select: none;
-        display: inline-flex;
-      }
-      .pad:hover {
-        background: #333;
-        transform: scale(1.05);
-      }
-      .pad:active {
-        background: #007bff;
-      }
+  <div class="main-grid">
 
-      #fsToggle {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
+    <!-- ===================== PHẦN 1: MUSIC PLAYER ===================== -->
+    <section class="panel" id="panel-player">
+      <div class="panel-title"><span class="dot"></span> Music Player - Nhạc nền sự kiện</div>
 
-      #fsToggle:hover {
-        background-color: #0056b3;
-      }
-    </style>
-  <script bis_use="true" type="text/javascript" charset="utf-8" data-bis-config="[&quot;facebook.com/&quot;,&quot;twitter.com/&quot;,&quot;youtube-nocookie.com/embed/&quot;,&quot;//vk.com/&quot;,&quot;//www.vk.com/&quot;,&quot;linkedin.com/&quot;,&quot;//www.linkedin.com/&quot;,&quot;//instagram.com/&quot;,&quot;//www.instagram.com/&quot;,&quot;//www.google.com/recaptcha/api2/&quot;,&quot;//hangouts.google.com/webchat/&quot;,&quot;//www.google.com/calendar/&quot;,&quot;//www.google.com/maps/embed&quot;,&quot;spotify.com/&quot;,&quot;soundcloud.com/&quot;,&quot;//player.vimeo.com/&quot;,&quot;//disqus.com/&quot;,&quot;//tgwidget.com/&quot;,&quot;//js.driftt.com/&quot;,&quot;friends2follow.com&quot;,&quot;/widget&quot;,&quot;login&quot;,&quot;//video.bigmir.net/&quot;,&quot;blogger.com&quot;,&quot;//smartlock.google.com/&quot;,&quot;//keep.google.com/&quot;,&quot;/web.tolstoycomments.com/&quot;,&quot;moz-extension://&quot;,&quot;chrome-extension://&quot;,&quot;/auth/&quot;,&quot;//analytics.google.com/&quot;,&quot;adclarity.com&quot;,&quot;paddle.com/checkout&quot;,&quot;hcaptcha.com&quot;,&quot;recaptcha.net&quot;,&quot;2captcha.com&quot;,&quot;accounts.google.com&quot;,&quot;www.google.com/shopping/customerreviews&quot;,&quot;buy.tinypass.com&quot;,&quot;gstatic.com&quot;,&quot;secureir.ebaystatic.com&quot;,&quot;docs.google.com&quot;,&quot;contacts.google.com&quot;,&quot;github.com&quot;,&quot;mail.google.com&quot;,&quot;chat.google.com&quot;,&quot;audio.xpleer.com&quot;,&quot;keepa.com&quot;,&quot;static.xx.fbcdn.net&quot;,&quot;sas.selleramp.com&quot;,&quot;1plus1.video&quot;,&quot;console.googletagservices.com&quot;,&quot;//lnkd.demdex.net/&quot;,&quot;//radar.cedexis.com/&quot;,&quot;//li.protechts.net/&quot;,&quot;challenges.cloudflare.com/&quot;,&quot;ogs.google.com&quot;]" src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/executors/traffic.js"></script><style>body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto !important}body.swal2-no-backdrop .swal2-container{background-color:rgba(0,0,0,0) !important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:rgba(0,0,0,0);pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{inset:0 auto auto 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{inset:0 0 auto auto}body.swal2-toast-shown .swal2-container.swal2-top-start,body.swal2-toast-shown .swal2-container.swal2-top-left{inset:0 auto auto 0}body.swal2-toast-shown .swal2-container.swal2-center-start,body.swal2-toast-shown .swal2-container.swal2-center-left{inset:50% auto auto 0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{inset:50% auto auto 50%;transform:translate(-50%, -50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{inset:50% 0 auto auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-start,body.swal2-toast-shown .swal2-container.swal2-bottom-left{inset:auto auto 0 0}body.swal2-toast-shown .swal2-container.swal2-bottom{inset:auto auto 0 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{inset:auto 0 0 auto}@media print{body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow-y:scroll !important}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown) .swal2-container{position:static !important}}div:where(.swal2-container){display:grid;position:fixed;z-index:1060;inset:0;box-sizing:border-box;grid-template-areas:"top-start     top            top-end" "center-start  center         center-end" "bottom-start  bottom-center  bottom-end";grid-template-rows:minmax(min-content, auto) minmax(min-content, auto) minmax(min-content, auto);height:100%;padding:.625em;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}div:where(.swal2-container).swal2-backdrop-show,div:where(.swal2-container).swal2-noanimation{background:rgba(0,0,0,.4)}div:where(.swal2-container).swal2-backdrop-hide{background:rgba(0,0,0,0) !important}div:where(.swal2-container).swal2-top-start,div:where(.swal2-container).swal2-center-start,div:where(.swal2-container).swal2-bottom-start{grid-template-columns:minmax(0, 1fr) auto auto}div:where(.swal2-container).swal2-top,div:where(.swal2-container).swal2-center,div:where(.swal2-container).swal2-bottom{grid-template-columns:auto minmax(0, 1fr) auto}div:where(.swal2-container).swal2-top-end,div:where(.swal2-container).swal2-center-end,div:where(.swal2-container).swal2-bottom-end{grid-template-columns:auto auto minmax(0, 1fr)}div:where(.swal2-container).swal2-top-start>.swal2-popup{align-self:start}div:where(.swal2-container).swal2-top>.swal2-popup{grid-column:2;place-self:start center}div:where(.swal2-container).swal2-top-end>.swal2-popup,div:where(.swal2-container).swal2-top-right>.swal2-popup{grid-column:3;place-self:start end}div:where(.swal2-container).swal2-center-start>.swal2-popup,div:where(.swal2-container).swal2-center-left>.swal2-popup{grid-row:2;align-self:center}div:where(.swal2-container).swal2-center>.swal2-popup{grid-column:2;grid-row:2;place-self:center center}div:where(.swal2-container).swal2-center-end>.swal2-popup,div:where(.swal2-container).swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;place-self:center end}div:where(.swal2-container).swal2-bottom-start>.swal2-popup,div:where(.swal2-container).swal2-bottom-left>.swal2-popup{grid-column:1;grid-row:3;align-self:end}div:where(.swal2-container).swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;place-self:end center}div:where(.swal2-container).swal2-bottom-end>.swal2-popup,div:where(.swal2-container).swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;place-self:end end}div:where(.swal2-container).swal2-grow-row>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-column:1/4;width:100%}div:where(.swal2-container).swal2-grow-column>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}div:where(.swal2-container).swal2-no-transition{transition:none !important}div:where(.swal2-container) div:where(.swal2-popup){display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0, 100%);width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;color:hsl(0,0%,33%);font-family:inherit;font-size:1rem}div:where(.swal2-container) div:where(.swal2-popup):focus{outline:none}div:where(.swal2-container) div:where(.swal2-popup).swal2-loading{overflow-y:hidden}div:where(.swal2-container) div:where(.swal2-popup).swal2-draggable{cursor:grab}div:where(.swal2-container) div:where(.swal2-popup).swal2-draggable div:where(.swal2-icon){cursor:grab}div:where(.swal2-container) div:where(.swal2-popup).swal2-dragging{cursor:grabbing}div:where(.swal2-container) div:where(.swal2-popup).swal2-dragging div:where(.swal2-icon){cursor:grabbing}div:where(.swal2-container) h2:where(.swal2-title){position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:inherit;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word;cursor:initial}div:where(.swal2-container) div:where(.swal2-actions){display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:auto;margin:1.25em auto 0;padding:0}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1))}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))}div:where(.swal2-container) div:where(.swal2-loader){display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 rgba(0,0,0,0) #2778c4 rgba(0,0,0,0)}div:where(.swal2-container) button:where(.swal2-styled){margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px rgba(0,0,0,0);font-weight:500}div:where(.swal2-container) button:where(.swal2-styled):not([disabled]){cursor:pointer}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm){border:0;border-radius:.25em;background:initial;background-color:#7066e0;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm):focus-visible{box-shadow:0 0 0 3px rgba(112,102,224,.5)}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny){border:0;border-radius:.25em;background:initial;background-color:#dc3741;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny):focus-visible{box-shadow:0 0 0 3px rgba(220,55,65,.5)}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel){border:0;border-radius:.25em;background:initial;background-color:#6e7881;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel):focus-visible{box-shadow:0 0 0 3px rgba(110,120,129,.5)}div:where(.swal2-container) button:where(.swal2-styled).swal2-default-outline:focus-visible{box-shadow:0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) button:where(.swal2-styled):focus-visible{outline:none}div:where(.swal2-container) button:where(.swal2-styled)::-moz-focus-inner{border:0}div:where(.swal2-container) div:where(.swal2-footer){margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:inherit;font-size:1em;text-align:center;cursor:initial}div:where(.swal2-container) .swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto !important;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}div:where(.swal2-container) div:where(.swal2-timer-progress-bar){width:100%;height:.25em;background:rgba(0,0,0,.2)}div:where(.swal2-container) img:where(.swal2-image){max-width:100%;margin:2em auto 1em;cursor:initial}div:where(.swal2-container) button:where(.swal2-close){z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:rgba(0,0,0,0);color:#ccc;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}div:where(.swal2-container) button:where(.swal2-close):hover{transform:none;background:rgba(0,0,0,0);color:#f27474}div:where(.swal2-container) button:where(.swal2-close):focus-visible{outline:none;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) button:where(.swal2-close)::-moz-focus-inner{border:0}div:where(.swal2-container) div:where(.swal2-html-container){z-index:1;justify-content:center;margin:0;padding:1em 1.6em .3em;overflow:auto;color:inherit;font-size:1.125em;font-weight:normal;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word;cursor:initial}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea),div:where(.swal2-container) select:where(.swal2-select),div:where(.swal2-container) div:where(.swal2-radio),div:where(.swal2-container) label:where(.swal2-checkbox){margin:1em 2em 3px}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea){box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid hsl(0,0%,85%);border-radius:.1875em;background:rgba(0,0,0,0);box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(0,0,0,0);color:inherit;font-size:1.125em}div:where(.swal2-container) input:where(.swal2-input).swal2-inputerror,div:where(.swal2-container) input:where(.swal2-file).swal2-inputerror,div:where(.swal2-container) textarea:where(.swal2-textarea).swal2-inputerror{border-color:#f27474 !important;box-shadow:0 0 2px #f27474 !important}div:where(.swal2-container) input:where(.swal2-input):focus,div:where(.swal2-container) input:where(.swal2-file):focus,div:where(.swal2-container) textarea:where(.swal2-textarea):focus{border:1px solid #b4dbed;outline:none;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) input:where(.swal2-input)::placeholder,div:where(.swal2-container) input:where(.swal2-file)::placeholder,div:where(.swal2-container) textarea:where(.swal2-textarea)::placeholder{color:#ccc}div:where(.swal2-container) .swal2-range{margin:1em 2em 3px;background:#fff}div:where(.swal2-container) .swal2-range input{width:80%}div:where(.swal2-container) .swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}div:where(.swal2-container) .swal2-range input,div:where(.swal2-container) .swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}div:where(.swal2-container) .swal2-input{height:2.625em;padding:0 .75em}div:where(.swal2-container) .swal2-file{width:75%;margin-right:auto;margin-left:auto;background:rgba(0,0,0,0);font-size:1.125em}div:where(.swal2-container) .swal2-textarea{height:6.75em;padding:.75em}div:where(.swal2-container) .swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:rgba(0,0,0,0);color:inherit;font-size:1.125em}div:where(.swal2-container) .swal2-radio,div:where(.swal2-container) .swal2-checkbox{align-items:center;justify-content:center;background:#fff;color:inherit}div:where(.swal2-container) .swal2-radio label,div:where(.swal2-container) .swal2-checkbox label{margin:0 .6em;font-size:1.125em}div:where(.swal2-container) .swal2-radio input,div:where(.swal2-container) .swal2-checkbox input{flex-shrink:0;margin:0 .4em}div:where(.swal2-container) label:where(.swal2-input-label){display:flex;justify-content:center;margin:1em auto 0}div:where(.swal2-container) div:where(.swal2-validation-message){align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:hsl(0,0%,94%);color:#666;font-size:1em;font-weight:300}div:where(.swal2-container) div:where(.swal2-validation-message)::before{content:"!";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}div:where(.swal2-container) .swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:rgba(0,0,0,0);font-weight:600}div:where(.swal2-container) .swal2-progress-steps li{display:inline-block;position:relative}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}div:where(.swal2-icon){position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:.25em solid rgba(0,0,0,0);border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;user-select:none}div:where(.swal2-icon) .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}div:where(.swal2-icon).swal2-error{border-color:#f27474;color:#f27474}div:where(.swal2-icon).swal2-error .swal2-x-mark{position:relative;flex-grow:1}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-error.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-error.swal2-icon-show .swal2-x-mark{animation:swal2-animate-error-x-mark .5s}div:where(.swal2-icon).swal2-warning{border-color:rgb(249.95234375,205.965625,167.74765625);color:#f8bb86}div:where(.swal2-icon).swal2-warning.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-warning.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .5s}div:where(.swal2-icon).swal2-info{border-color:rgb(156.7033492823,224.2822966507,246.2966507177);color:#3fc3ee}div:where(.swal2-icon).swal2-info.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-info.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .8s}div:where(.swal2-icon).swal2-question{border-color:rgb(200.8064516129,217.9677419355,225.1935483871);color:#87adbd}div:where(.swal2-icon).swal2-question.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-question.swal2-icon-show .swal2-icon-content{animation:swal2-animate-question-mark .8s}div:where(.swal2-icon).swal2-success{border-color:#a5dc86;color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;border-radius:50%}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}div:where(.swal2-icon).swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-0.25em;left:-0.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}div:where(.swal2-icon).swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-animate-success-line-tip .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-animate-success-line-long .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-circular-line-right{animation:swal2-rotate-success-circular-line 4.25s ease-in}[class^=swal2]{-webkit-tap-highlight-color:rgba(0,0,0,0)}.swal2-show{animation:swal2-show .3s}.swal2-hide{animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}.swal2-toast{box-sizing:border-box;grid-column:1/4 !important;grid-row:1/4 !important;grid-template-columns:min-content auto min-content;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 1px rgba(0,0,0,.075),0 1px 2px rgba(0,0,0,.075),1px 2px 4px rgba(0,0,0,.075),1px 3px 8px rgba(0,0,0,.075),2px 4px 16px rgba(0,0,0,.075);pointer-events:all}.swal2-toast>*{grid-column:2}.swal2-toast h2:where(.swal2-title){margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-toast .swal2-loading{justify-content:center}.swal2-toast input:where(.swal2-input){height:2em;margin:.5em;font-size:1em}.swal2-toast .swal2-validation-message{font-size:1em}.swal2-toast div:where(.swal2-footer){margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-toast button:where(.swal2-close){grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-toast div:where(.swal2-html-container){margin:.5em 1em;padding:0;overflow:initial;font-size:1em;text-align:initial}.swal2-toast div:where(.swal2-html-container):empty{padding:0}.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:bold}.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-toast div:where(.swal2-actions){justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-toast button:where(.swal2-styled){margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;border-radius:50%}.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.8em;left:-0.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-toast-animate-success-line-tip .75s}.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-toast-animate-success-line-long .75s}.swal2-toast.swal2-show{animation:swal2-toast-show .5s}.swal2-toast.swal2-hide{animation:swal2-toast-hide .1s forwards}@keyframes swal2-show{0%{transform:scale(0.7)}45%{transform:scale(1.05)}80%{transform:scale(0.95)}100%{transform:scale(1)}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(0.5);opacity:0}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-0.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(0.4);opacity:0}50%{margin-top:1.625em;transform:scale(0.4);opacity:0}80%{margin-top:-0.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0deg);opacity:1}}@keyframes swal2-rotate-loading{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}@keyframes swal2-toast-show{0%{transform:translateY(-0.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(0.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0deg)}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-0.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}</style></head>
-  <body __processed_94d104e1-180f-42c4-8c78-8c7fd748a82a__="true" bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWllZ29tY29uIiwiYWRibG9ja2VyU3RhdHVzIjp7IkRJU1BMQVkiOiJkaXNhYmxlZCIsIkZBQ0VCT09LIjoiZGlzYWJsZWQiLCJUV0lUVEVSIjoiZGlzYWJsZWQiLCJSRURESVQiOiJkaXNhYmxlZCIsIlBJTlRFUkVTVCI6ImRpc2FibGVkIiwiSU5TVEFHUkFNIjoiZGlzYWJsZWQiLCJUSUtUT0siOiJkaXNhYmxlZCIsIkxJTktFRElOIjoiZGlzYWJsZWQiLCJDT05GSUciOiJkaXNhYmxlZCJ9LCJ2ZXJzaW9uIjoiMi4wLjMzIiwic2NvcmUiOjIwMDMzfV0=">
-    <h1>🎵 BỘ PAD NHẠC CHÀO - QUICK SHORCUT 🎵</h1>
-    <h1>Made by Zinh Doan - 0986.416.678</h1>
-    <p>Please contact: Huuvinhit98@gmail.com for use it</p>
-    
-    <button id="fsToggle" title="Toggle fullscreen (or press F11)">
-      Toggle Fullscreen
-    </button>
-
-    <div class="pad-container" bis_skin_checked="1">
-      <div class="pad" data-src="sounds/pad1.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 1<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad1.mp3"></audio>
+      <div id="now-playing">
+        <div class="track-name" id="track-name">Chưa chọn bài hát</div>
+        <div class="track-sub" id="track-sub">Chọn 1 bài trong Playlist bên dưới</div>
       </div>
 
-      <div class="pad" data-src="sounds/pad2.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 2<br><span class="pad-name">Chưa gán</span>
+      <div class="progress-area">
+        <div class="progress-times">
+          <span id="current-time">00:00</span>
+          <span id="duration-time">00:00</span>
         </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad2.mp3"></audio>
+        <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
       </div>
 
-      <div class="pad" data-src="sounds/pad3.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 3<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad3.mp3"></audio>
+      <div class="controls-row">
+        <button class="ctrl-btn" id="btn-stop" title="Dừng hẳn">⏹</button>
+        <button class="ctrl-btn big" id="btn-play" title="Phát / Tạm dừng">▶</button>
+        <button class="ctrl-btn" id="btn-loop" title="Lặp lại bài hiện tại">🔁</button>
       </div>
 
-      <div class="pad" data-src="sounds/pad4.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 4<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad4.mp3"></audio>
+      <div class="volume-row">
+        <span>🔊</span>
+        <input type="range" id="volume-bar" min="0" max="1" step="0.01" value="0.8">
       </div>
 
-      <div class="pad" data-src="sounds/pad5.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 5<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad5.mp3"></audio>
+      <div class="upload-box">
+        <label class="upload-label" for="upload-music">+ Tải nhạc lên (.mp3)</label>
+        <input type="file" id="upload-music" accept="audio/*" multiple>
       </div>
 
-      <div class="pad" data-src="sounds/pad6.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 6<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
+      <ul class="playlist" id="playlist"></ul>
+    </section>
 
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad6.mp3"></audio>
+    <!-- ===================== PHẦN 2: DJ SOUND PAD ===================== -->
+    <section class="panel" id="panel-pad">
+      <div class="panel-title">
+        <span class="dot"></span> DJ Sound Pad - Hiệu ứng nhanh
+        <button id="btn-stop-all-pads" class="stop-all-btn" title="Dừng tất cả âm thanh Pad đang chạy">⏹ Dừng tất cả</button>
       </div>
 
-      <div class="pad" data-src="sounds/pad7.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 7<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad7.mp3"></audio>
+      <!-- Thanh công cụ: thêm hàng loạt Pad mới cùng lúc -->
+      <div class="pad-toolbar">
+        <label class="pad-bulk-label" for="bulk-pad-upload">📂 Thêm nhiều Pad cùng lúc</label>
+        <input type="file" id="bulk-pad-upload" class="pad-file-input" accept="audio/*" multiple>
+        <span class="bulk-status" id="bulk-status"></span>
       </div>
 
-      <div class="pad" data-src="sounds/pad8.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 8<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
+      <p class="pad-hint">Pad 1-10: hiệu ứng nhanh. Pad 11-15: nhạc dẫn MC (mời lên sân khấu, giới thiệu đại biểu...). Bấm để phát, bấm lại để dừng — hoặc dùng phím tắt hiện trên mỗi pad. Dùng "Đổi âm thanh" dưới mỗi pad để thay 1 bài, hoặc "Thêm nhiều Pad cùng lúc" ở trên để nạp nhiều bài — mỗi file sẽ tạo 1 pad mới nối tiếp phía dưới, không ghi đè pad đang có.</p>
 
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad8.mp3"></audio>
+      <div class="pad-grid" id="pad-grid">
+        <!-- Các nút Pad sẽ được JS render tự động vào đây -->
       </div>
+    </section>
 
-      <div class="pad" data-src="sounds/pad9.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 9<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
+  </div>
 
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad9.mp3"></audio>
-      </div>
+  <footer>Được xây dựng cho các sự kiện trực tiếp — <span>Bấm là chạy, không cần internet</span></footer>
+</div>
 
-      <div class="pad" data-src="sounds/pad10.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 10<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
+<!-- Thanh "Đang phát" cố định dưới màn hình: xem nhanh Pad nào đang chạy
+     và dừng ngay bằng nút ✕ trên từng chip, không cần dò tìm trong lưới Pad -->
+<div class="now-playing-bar">
+  <span class="np-label">🔊 Đang phát</span>
+  <div class="now-playing-list" id="now-playing-list">
+    <span class="now-playing-empty">Không có gì đang phát</span>
+  </div>
+</div>
 
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad10.mp3"></audio>
-      </div>
+<!-- Thẻ audio ẩn dùng cho nhạc nền chính -->
+<audio id="main-audio" preload="metadata"></audio>
 
-      <div class="pad" data-src="sounds/pad11.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 11<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad11.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad12.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 12<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad12.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad13.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 13<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad13.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad14.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 14<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad14.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad15.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 15<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad15.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad16.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 16<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad16.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad17.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 17<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad17.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad18.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 18<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad18.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad19.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 19<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad19.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad20.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 20<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad20.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad21.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 21<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad21.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad22.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 22<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad22.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad23.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 23<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad23.mp3"></audio>
-      </div>
-
-      <div class="pad" data-src="sounds/pad24.mp3" bis_skin_checked="1">
-        <div class="pad-label" bis_skin_checked="1">
-          PAD 24<br><span class="pad-name">Chưa gán</span>
-        </div>
-        <div class="pad-controls" bis_skin_checked="1">
-          <div class="button-row" bis_skin_checked="1">
-            <button class="play">Play</button>
-            <button class="pause">Pause</button>
-            <button class="restart">Restart</button>
-          </div>
-          <label class="choose">Choose<input type="file" accept="audio/*" class="choose-file"></label>
-        </div>
-
-        <progress class="timeline" value="0" max="1"></progress>
-        <audio preload="none" class="pad-audio" src="sounds/pad24.mp3"></audio>
-      </div>
-    </div>
-
-    <script>
-      // setup pad controls: play/pause/restart/choose + timeline
-      const pads = document.querySelectorAll(".pad");
-      let activeAudio = null;
-      function stopAllExcept(except) {
-        pads.forEach((p) => {
-          const a = p.querySelector(".pad-audio");
-          if (a && a !== except) {
-            a.pause();
-            p.classList.remove("playing");
-          }
-        });
-      }
-      pads.forEach((pad) => {
-        const audio = pad.querySelector(".pad-audio");
-        const playBtn = pad.querySelector(".play");
-        const pauseBtn = pad.querySelector(".pause");
-        const restartBtn = pad.querySelector(".restart");
-        const chooseInput = pad.querySelector(".choose-file");
-        const timeline = pad.querySelector(".timeline");
-        const padName = pad.querySelector(".pad-name");
-
-        // Ensure audio src is set from data-src if not present
-        if (!audio.src && pad.dataset.src) audio.src = pad.dataset.src;
-
-        function updateTimeline() {
-          if (audio.duration && !isNaN(audio.duration)) {
-            timeline.max = audio.duration;
-            timeline.value = audio.currentTime;
-          } else {
-            timeline.value = 0;
-          }
-        }
-
-        playBtn.addEventListener("click", () => {
-          stopAllExcept(audio);
-          activeAudio = audio;
-          audio.play();
-          pad.classList.add("playing");
-        });
-        pauseBtn.addEventListener("click", () => {
-          audio.pause();
-          pad.classList.remove("playing");
-        });
-        restartBtn.addEventListener("click", () => {
-          audio.currentTime = 0;
-          stopAllExcept(audio);
-          activeAudio = audio;
-          audio.play();
-          pad.classList.add("playing");
-        });
-        chooseInput.addEventListener("change", (e) => {
-          const f = e.target.files[0];
-          if (!f) return;
-          audio.src = URL.createObjectURL(f);
-          padName.textContent = f.name;
-          audio.load();
-        });
-
-        audio.addEventListener("timeupdate", updateTimeline);
-        audio.addEventListener("loadedmetadata", updateTimeline);
-        audio.addEventListener("ended", () => {
-          pad.classList.remove("playing");
-        });
-
-        // allow clicking timeline to seek
-        timeline.addEventListener("click", (ev) => {
-          if (!audio.duration) return;
-          const rect = timeline.getBoundingClientRect();
-          const pct = (ev.clientX - rect.left) / rect.width;
-          audio.currentTime = pct * audio.duration;
-          updateTimeline();
-        });
-      });
-
-      // fullscreen toggle helper
-      const fsBtn = document.getElementById("fsToggle");
-      fsBtn.addEventListener("click", async () => {
-        try {
-          if (!document.fullscreenElement) {
-            await document.documentElement.requestFullscreen();
-          } else {
-            await document.exitFullscreen();
-          }
-        } catch (e) {
-          console.warn("Fullscreen failed", e);
-        }
-      });
-      // optional: close any playing pad when leaving fullscreen
-      document.addEventListener("fullscreenchange", () => {
-        if (!document.fullscreenElement) {
-          document
-            .querySelectorAll(".pad.playing")
-            .forEach((p) => p.classList.remove("playing"));
-        }
-      });
-    </script>
-  <!-- Code injected by live-server -->
 <script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
+/* ==========================================================================
+   EVENT MUSIC CENTER - JAVASCRIPT THUẦN (Không dùng thư viện ngoài)
+   Gồm 2 phần: (1) Music Player nhạc nền, (2) DJ Sound Pad hiệu ứng nhanh
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------- */
+/* CHẾ ĐỘ SÁNG / TỐI (Theme Toggle)                                        */
+/* ---------------------------------------------------------------------- */
+const themeToggleBtn = document.getElementById('theme-toggle');
+
+// Xác định theme khi mở trang: ưu tiên lựa chọn đã lưu từ lần trước (nếu có)
+// -> nếu chưa từng chọn thì theo cài đặt Sáng/Tối của hệ điều hành/trình duyệt
+// -> nếu không xác định được thì mặc định là SÁNG.
+const savedTheme = localStorage.getItem('emc-theme');
+let useLightTheme;
+if(savedTheme === 'light' || savedTheme === 'dark'){
+  useLightTheme = (savedTheme === 'light');
+} else if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+  useLightTheme = false; // Hệ thống đang đặt chế độ Tối -> theo Tối
+} else {
+  useLightTheme = true; // Không rõ / hệ thống đang Sáng -> mặc định SÁNG
+}
+
+if(useLightTheme){
+  document.body.classList.add('theme-light');
+  themeToggleBtn.textContent = '☀️';
+} else {
+  themeToggleBtn.textContent = '🌙';
+}
+
+themeToggleBtn.addEventListener('click', () => {
+  document.body.classList.toggle('theme-light');
+  const isLight = document.body.classList.contains('theme-light');
+  themeToggleBtn.textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('emc-theme', isLight ? 'light' : 'dark');
+});
+
+
+/* ---------------------------------------------------------------------- */
+/* TIỆN ÍCH DÙNG CHUNG: DIM NHẠC TRƯỚC KHI DỪNG                             */
+/* ---------------------------------------------------------------------- */
+// Khi bấm DỪNG (nhạc nền hoặc Pad), âm lượng sẽ giảm dần (dim) trong 0.5s
+// thay vì cắt đột ngột, sau đó mới thực sự pause + đưa về đầu bài.
+function fadeOutAndStop(audio, duration, onDone){
+  duration = duration || 500;
+  const steps = 20;
+  const stepTime = duration / steps;
+  const startVolume = audio.volume;
+  let count = 0;
+
+  const timer = setInterval(() => {
+    count++;
+    audio.volume = Math.max(0, startVolume * (1 - count / steps));
+    if(count >= steps){
+      clearInterval(timer);
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = startVolume; // khôi phục âm lượng gốc cho lần phát kế tiếp
+      if(onDone) onDone();
+    }
+  }, stepTime);
+}
+
+
+/* ---------------------------------------------------------------------- */
+/* PHẦN 1: MUSIC PLAYER                                                    */
+/* ---------------------------------------------------------------------- */
+
+// Danh sách phát giả lập ban đầu (10 bài nhạc sự kiện có sẵn tên file)
+// Lưu ý: đây là tên file giả lập, khi chạy thực tế cần đặt các file mp3
+// tương ứng cùng thư mục với file HTML này, hoặc người dùng tự Import.
+let playlist = [
+  { name: "Nhạc khai mạc",              src: "khai_mac.mp3",           tag: "Có sẵn" },
+  { name: "Nhạc nền sự kiện 1",         src: "nhac_nen_1.mp3",         tag: "Có sẵn" },
+  { name: "Nhạc nền sự kiện 2",         src: "nhac_nen_2.mp3",         tag: "Có sẵn" },
+  { name: "Nhạc nền sự kiện 3",         src: "nhac_nen_3.mp3",         tag: "Có sẵn" },
+  { name: "Nhạc nền sự kiện 4",         src: "nhac_nen_4.mp3",         tag: "Có sẵn" },
+  { name: "Nhạc nền sự kiện 5",         src: "nhac_nen_5.mp3",         tag: "Có sẵn" },
+  { name: "Nhạc chờ / đón khách",       src: "nhac_cho.mp3",           tag: "Có sẵn" },
+  { name: "Nhạc giữa chương trình",     src: "giua_chuong_trinh.mp3",  tag: "Có sẵn" },
+  { name: "Nhạc trao giải",             src: "trao_giai.mp3",          tag: "Có sẵn" },
+  { name: "Nhạc bế mạc",                src: "be_mac.mp3",             tag: "Có sẵn" }
+];
+
+let currentTrackIndex = -1; // Chưa chọn bài nào ban đầu
+let isSeeking = false;      // Cờ đánh dấu người dùng đang kéo thanh tiến trình
+
+const mainAudio     = document.getElementById('main-audio');
+const playlistEl    = document.getElementById('playlist');
+const trackNameEl   = document.getElementById('track-name');
+const trackSubEl    = document.getElementById('track-sub');
+const btnPlay        = document.getElementById('btn-play');
+const btnStop        = document.getElementById('btn-stop');
+const btnLoop         = document.getElementById('btn-loop');
+const progressBar    = document.getElementById('progress-bar');
+const currentTimeEl  = document.getElementById('current-time');
+const durationTimeEl = document.getElementById('duration-time');
+const volumeBar      = document.getElementById('volume-bar');
+const uploadInput    = document.getElementById('upload-music');
+
+// Định dạng giây -> mm:ss
+function formatTime(seconds){
+  if(!isFinite(seconds) || seconds < 0) seconds = 0;
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+// Vẽ lại toàn bộ danh sách Playlist ra giao diện
+function renderPlaylist(){
+  playlistEl.innerHTML = '';
+  playlist.forEach((track, index) => {
+    const li = document.createElement('li');
+    li.className = (index === currentTrackIndex) ? 'playing' : '';
+    li.innerHTML = `
+      <span class="track-index">${(index+1).toString().padStart(2,'0')}</span>
+      <span class="track-title">${track.name}</span>
+      <span class="track-tag">${track.tag}</span>
+    `;
+    // Bấm vào 1 bài trong playlist -> phát bài đó
+    li.addEventListener('click', () => loadTrack(index, true));
+    playlistEl.appendChild(li);
+  });
+}
+
+// Nạp 1 bài hát vào thẻ audio chính, autoPlay = true thì phát luôn
+function loadTrack(index, autoPlay){
+  if(index < 0 || index >= playlist.length) return;
+  currentTrackIndex = index;
+  const track = playlist[index];
+
+  mainAudio.src = track.src;
+  trackNameEl.textContent = track.name;
+  trackSubEl.textContent = "Đang nạp: " + track.src;
+
+  renderPlaylist();
+
+  if(autoPlay){
+    mainAudio.play().catch(() => {
+      // Nếu file không tồn tại thực tế (giả lập) thì báo cho người dùng biết
+      trackSubEl.textContent = "Không tìm thấy file: " + track.src + " (hãy Import file thật)";
+    });
+  }
+}
+
+// Nút PLAY / PAUSE
+btnPlay.addEventListener('click', () => {
+  if(currentTrackIndex === -1){
+    // Chưa chọn bài nào thì tự động phát bài đầu tiên trong playlist
+    if(playlist.length > 0) loadTrack(0, true);
+    return;
+  }
+  if(mainAudio.paused){
+    mainAudio.play().catch(()=>{
+      trackSubEl.textContent = "Không phát được file (file giả lập chưa tồn tại)";
+    });
+  } else {
+    mainAudio.pause();
+  }
+});
+
+// Nút STOP: dim (giảm dần âm lượng) trong 0.5s rồi mới dừng hẳn, đưa về 0
+btnStop.addEventListener('click', () => {
+  if(mainAudio.paused){
+    // Đang không phát -> chỉ cần đưa về đầu ngay, không cần dim
+    mainAudio.currentTime = 0;
+    progressBar.value = 0;
+    currentTimeEl.textContent = "00:00";
+    return;
+  }
+  fadeOutAndStop(mainAudio, 500, () => {
+    mainAudio.volume = parseFloat(volumeBar.value); // khôi phục theo thanh âm lượng
+    updatePlayButtonUI();
+    progressBar.value = 0;
+    currentTimeEl.textContent = "00:00";
+  });
+});
+
+// Nút LOOP: bật/tắt lặp lại bài hiện tại
+btnLoop.addEventListener('click', () => {
+  mainAudio.loop = !mainAudio.loop;
+  btnLoop.classList.toggle('loop-on', mainAudio.loop);
+});
+
+// Cập nhật icon nút Play theo trạng thái audio
+function updatePlayButtonUI(){
+  if(mainAudio.paused){
+    btnPlay.textContent = '▶';
+    btnPlay.classList.remove('active-glow');
+  } else {
+    btnPlay.textContent = '⏸';
+    btnPlay.classList.add('active-glow');
+  }
+}
+mainAudio.addEventListener('play', updatePlayButtonUI);
+mainAudio.addEventListener('pause', updatePlayButtonUI);
+
+// Khi có metadata (biết được tổng thời lượng bài hát)
+mainAudio.addEventListener('loadedmetadata', () => {
+  progressBar.max = mainAudio.duration || 0;
+  durationTimeEl.textContent = formatTime(mainAudio.duration);
+});
+
+// Cập nhật thanh tiến trình khi nhạc đang chạy
+mainAudio.addEventListener('timeupdate', () => {
+  if(isSeeking) return; // Không ghi đè khi người dùng đang kéo tay
+  progressBar.value = mainAudio.currentTime;
+  currentTimeEl.textContent = formatTime(mainAudio.currentTime);
+});
+
+// Khi bài hát kết thúc tự nhiên (không loop) -> tự chuyển bài kế tiếp
+mainAudio.addEventListener('ended', () => {
+  if(!mainAudio.loop){
+    const nextIndex = (currentTrackIndex + 1) % playlist.length;
+    loadTrack(nextIndex, true);
+  }
+});
+
+// Kéo thanh tiến trình để tua nhạc
+progressBar.addEventListener('input', () => {
+  isSeeking = true;
+  currentTimeEl.textContent = formatTime(progressBar.value);
+});
+progressBar.addEventListener('change', () => {
+  mainAudio.currentTime = progressBar.value;
+  isSeeking = false;
+});
+
+// Điều chỉnh âm lượng nhạc nền
+volumeBar.addEventListener('input', () => {
+  mainAudio.volume = volumeBar.value;
+});
+mainAudio.volume = volumeBar.value;
+
+// Tính năng Tải nhạc lên (Import file mp3 từ máy) -> thêm vào Playlist
+uploadInput.addEventListener('change', (e) => {
+  const files = Array.from(e.target.files);
+  files.forEach(file => {
+    const objectUrl = URL.createObjectURL(file); // Tạo URL tạm để phát file cục bộ
+    playlist.push({ name: file.name.replace(/\.[^/.]+$/, ""), src: objectUrl, tag: "Đã tải lên" });
+  });
+  renderPlaylist();
+  // Tự động phát bài vừa tải lên cuối cùng
+  if(files.length > 0){
+    loadTrack(playlist.length - 1, true);
+  }
+  uploadInput.value = ''; // reset input để có thể chọn lại cùng file lần sau
+});
+
+// Khởi tạo giao diện Playlist ban đầu
+renderPlaylist();
+
+
+/* ---------------------------------------------------------------------- */
+/* PHẦN 2: DJ SOUND PAD                                                     */
+/* ---------------------------------------------------------------------- */
+
+// Dữ liệu các nút Pad mặc định: tên hiển thị, file mặc định, icon, màu LED.
+// Gộp chung tất cả trong 1 lưới duy nhất (không chia tab) để nhìn thấy hết
+// và bấm nhanh khi đang chạy sự kiện. Muốn đổi âm thanh thì dùng nút
+// "Đổi âm thanh" ngay dưới mỗi pad để nạp file khác từ máy (không ảnh hưởng
+// tới Playlist nhạc nền bên Music Player).
+//
+// Nhóm 1 (pad 1-10): hiệu ứng âm thanh nhanh cho sự kiện.
+// Nhóm 2 (pad 11-15): các đoạn nhạc phục vụ MC dẫn chương trình - mời lên
+// sân khấu, giới thiệu đại biểu, mời phát biểu... khác với nhạc nền chạy
+// xuyên suốt (nhạc nền nằm ở Playlist bên Music Player).
+const padData = [
+  { id: 'pad1',  label: 'Vỗ tay',              icon: '👏', file: 'vo_tay.mp3',              color: '#00fff2' },
+  { id: 'pad2',  label: 'Còi hú DJ',           icon: '📯', file: 'coi_hu.mp3',              color: '#ff2ec4' },
+  { id: 'pad3',  label: 'Nhạc hồi hộp',        icon: '⏳', file: 'hoi_hop.mp3',             color: '#b026ff' },
+  { id: 'pad4',  label: 'Nhạc chiến thắng',    icon: '🏆', file: 'chien_thang.mp3',         color: '#f7ff00' },
+  { id: 'pad5',  label: 'Tiếng cười',          icon: '😂', file: 'tieng_cuoi.mp3',          color: '#00ff8c' },
+  { id: 'pad6',  label: 'Xịt keo',             icon: '🎉', file: 'xit_keo.mp3',             color: '#ff7a00' },
+  { id: 'pad7',  label: 'Đếm ngược',           icon: '⏱️', file: 'dem_nguoc.mp3',           color: '#00fff2' },
+  { id: 'pad8',  label: 'Pháo hoa',            icon: '🎆', file: 'phao_hoa.mp3',            color: '#ff2ec4' },
+  { id: 'pad9',  label: 'Tiếng chuông',        icon: '🔔', file: 'chuong.mp3',              color: '#b026ff' },
+  { id: 'pad10', label: 'Còi xe',              icon: '📢', file: 'coi_xe.mp3',              color: '#f7ff00' },
+  { id: 'pad11', label: 'Mời lên sân khấu',    icon: '🎤', file: 'len_san_khau.mp3',        color: '#00ff8c' },
+  { id: 'pad12', label: 'Giới thiệu đại biểu', icon: '👔', file: 'gioi_thieu_dai_bieu.mp3', color: '#ff7a00' },
+  { id: 'pad13', label: 'Nhạc dẫn MC',         icon: '🎙️', file: 'nhac_mc.mp3',             color: '#00fff2' },
+  { id: 'pad14', label: 'Mời phát biểu',       icon: '📣', file: 'moi_phat_bieu.mp3',       color: '#ff2ec4' },
+  { id: 'pad15', label: 'Cảm ơn - Kết',        icon: '🙏', file: 'cam_on.mp3',              color: '#b026ff' }
+];
+
+// Lưu trữ trạng thái từng pad: đối tượng Audio + tên file hiện tại
+const padState = {}; // { pad1: { audio: Audio, fileName: 'vo_tay.mp3' }, ... }
+
+// Danh sách phím tắt gán theo đúng thứ tự Pad (bố trí như bàn phím DJ:
+// hàng số 1-9,0 rồi tới các hàng chữ). Để dư nhiều phím vì "Thêm nhiều Pad"
+// có thể tạo pad mới vượt quá 15 pad ban đầu.
+const padShortcuts = [
+  '1','2','3','4','5','6','7','8','9','0',
+  'Q','W','E','R','T','Y','U','I','O','P',
+  'A','S','D','F','G','H','J','K','L',
+  'Z','X','C','V','B','N','M'
+];
+
+// Bảng màu neon dùng để tô cho các pad MỚI được thêm qua "Thêm nhiều Pad"
+const neonPalette = ['#00fff2', '#ff2ec4', '#b026ff', '#f7ff00', '#00ff8c', '#ff7a00'];
+
+const padGrid = document.getElementById('pad-grid');
+const nowPlayingListEl = document.getElementById('now-playing-list');
+
+// Vẽ lại thanh "Đang phát" cố định phía dưới: liệt kê mọi Pad đang chạy
+// dạng chip, mỗi chip có nút ✕ để dừng ngay pad đó. Hàm này được gọi lại
+// mỗi khi có Pad bắt đầu phát / dừng / đổi âm thanh, để luôn đúng thực tế.
+function updateNowPlayingList(){
+  const playingPads = padData.filter(pad => padState[pad.id] && !padState[pad.id].audio.paused);
+
+  if(playingPads.length === 0){
+    nowPlayingListEl.innerHTML = '<span class="now-playing-empty">Không có gì đang phát</span>';
+    return;
+  }
+
+  nowPlayingListEl.innerHTML = '';
+  playingPads.forEach(pad => {
+    const chip = document.createElement('span');
+    chip.className = 'now-playing-chip';
+    chip.innerHTML = `<span>${pad.icon} ${pad.label}</span><button class="np-stop" title="Dừng ngay pad này">✕</button>`;
+    chip.querySelector('.np-stop').addEventListener('click', () => {
+      // Bấm lại đúng nút Pad đó để dùng chung logic toggle (đang phát -> dừng)
+      const btn = document.getElementById('btn-' + pad.id);
+      if(btn) btn.click();
+    });
+    nowPlayingListEl.appendChild(chip);
+  });
+}
+
+// Gán 1 file âm thanh mới cho 1 pad (dùng chung cho cả đổi từng pad lẻ
+// và tải hàng loạt nhiều pad cùng lúc). Không đổi tên/icon của pad,
+// chỉ thay nội dung âm thanh bên trong.
+function setPadSound(pad, file){
+  const state = padState[pad.id];
+  const btn = document.getElementById('btn-' + pad.id);
+  const currentFileEl = document.getElementById('current-' + pad.id);
+  if(!state || !btn || !currentFileEl) return;
+
+  // Dừng âm thanh cũ nếu đang phát trước khi thay file mới
+  state.audio.pause();
+  btn.classList.remove('playing');
+
+  const objectUrl = URL.createObjectURL(file);
+  state.audio = new Audio(objectUrl);
+  state.fileName = file.name;
+  currentFileEl.textContent = file.name;
+
+  // Gắn lại sự kiện 'ended' cho audio mới
+  state.audio.addEventListener('ended', () => {
+    btn.classList.remove('playing');
+    updateNowPlayingList();
+  });
+
+  updateNowPlayingList(); // Pad vừa đổi nhạc có thể vừa bị dừng -> cập nhật lại thanh "Đang phát"
+}
+
+// Tạo DOM + gắn toàn bộ sự kiện cho 1 pad (dùng chung cho lần vẽ đầu tiên
+// VÀ khi thêm pad mới qua "Thêm nhiều Pad" sau này). Chỉ tạo/append phần tử
+// của riêng pad này - không đụng tới các pad khác đang có trên lưới.
+function createPadElement(pad, index){
+  // Tạo đối tượng Audio riêng cho pad (phát song song với nhạc nền)
+  const audio = pad.file ? new Audio(pad.file) : new Audio();
+  padState[pad.id] = { audio: audio, fileName: pad.file };
+
+  const shortcutKey = padShortcuts[index] || '';
+
+  const cell = document.createElement('div');
+  cell.className = 'pad-cell';
+  cell.innerHTML = `
+    <button class="pad-btn" id="btn-${pad.id}" style="--pad-color:${pad.color}">
+      ${shortcutKey ? `<span class="pad-key">${shortcutKey}</span>` : ''}
+      <span class="pad-icon">${pad.icon}</span>
+      <span class="pad-label">${pad.label}</span>
+    </button>
+    <div class="pad-file-row">
+      <label class="pad-file-label" for="file-${pad.id}">🔄 Đổi âm thanh</label>
+      <input type="file" class="pad-file-input" id="file-${pad.id}" accept="audio/*">
+    </div>
+    <div class="pad-current-file" id="current-${pad.id}">${pad.file ? pad.file : 'Chưa có âm thanh'}</div>
+  `;
+
+  const btn = cell.querySelector(`#btn-${pad.id}`);
+  const fileInput = cell.querySelector(`#file-${pad.id}`);
+  const currentFileEl = cell.querySelector(`#current-${pad.id}`);
+
+  // Bấm vào Pad: phát nếu đang dừng, dừng nếu đang phát (toggle)
+  btn.addEventListener('click', () => {
+    const state = padState[pad.id];
+    const a = state.audio;
+
+    if(a.paused){
+      // Phát từ đầu, không ảnh hưởng tới nhạc nền hay các pad khác
+      a.currentTime = 0;
+      a.play().catch(() => {
+        currentFileEl.textContent = "Không tìm thấy: " + state.fileName;
+      });
+      btn.classList.add('playing');
+    } else {
+      // Đang chạy -> bấm lại để dừng: dim (giảm dần âm lượng) 0.5s rồi mới tắt hẳn
+      const originalVolume = a.volume;
+      fadeOutAndStop(a, 500, () => {
+        a.volume = originalVolume;
+        btn.classList.remove('playing');
+        updateNowPlayingList();
+      });
+    }
+    updateNowPlayingList(); // Cập nhật ngay thanh "Đang phát" phía dưới
+  });
+
+  // Khi âm thanh Pad tự kết thúc -> tắt hiệu ứng LED glow
+  audio.addEventListener('ended', () => {
+    btn.classList.remove('playing');
+    updateNowPlayingList();
+  });
+
+  // Tính năng đổi file âm thanh cho từng Pad (Import / Custom)
+  fileInput.addEventListener('click', (e) => {
+    e.stopPropagation(); // Không cho sự kiện nổi bọt lên nút Pad
+  });
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    setPadSound(pad, file);
+    fileInput.value = '';
+  });
+
+  return cell;
+}
+
+// Render toàn bộ nút Pad ra giao diện (gộp chung 1 lưới, không chia tab)
+function renderPads(){
+  padGrid.innerHTML = '';
+  padData.forEach((pad, index) => {
+    padGrid.appendChild(createPadElement(pad, index));
+  });
+}
+
+renderPads();
+updateNowPlayingList(); // Khởi tạo thanh "Đang phát" (ban đầu chưa có gì chạy)
+
+// Nút "Dừng tất cả Pad": tắt nhanh mọi âm thanh Pad đang chạy cùng lúc
+const stopAllBtn = document.getElementById('btn-stop-all-pads');
+stopAllBtn.addEventListener('click', () => {
+  Object.keys(padState).forEach(id => {
+    const state = padState[id];
+    const btn = document.getElementById('btn-' + id);
+    if(!state.audio.paused){
+      // Đang phát -> dim (giảm dần âm lượng) 0.5s rồi mới tắt hẳn
+      const originalVolume = state.audio.volume;
+      fadeOutAndStop(state.audio, 500, () => {
+        state.audio.volume = originalVolume;
+        if(btn) btn.classList.remove('playing');
+        updateNowPlayingList();
+      });
+    } else {
+      state.audio.currentTime = 0;
+    }
+  });
+  updateNowPlayingList();
+});
+
+// Tính năng "Thêm nhiều Pad cùng lúc": chọn nhiều file 1 lần -> mỗi file
+// tạo ra 1 PAD MỚI nối tiếp phía dưới các pad hiện có (KHÔNG ghi đè pad cũ).
+const bulkPadInput = document.getElementById('bulk-pad-upload');
+const bulkStatusEl = document.getElementById('bulk-status');
+bulkPadInput.addEventListener('change', (e) => {
+  const files = Array.from(e.target.files);
+  if(files.length === 0) return;
+
+  const firstNewNumber = padData.length + 1;
+  let lastCell = null;
+
+  files.forEach(file => {
+    const newIndex = padData.length; // Vị trí mới = cuối danh sách hiện tại
+    const newPad = {
+      id: 'pad' + (newIndex + 1),
+      label: file.name.replace(/\.[^/.]+$/, ""), // Tên pad lấy theo tên file
+      icon: '🎵',
+      file: null, // Sẽ gán âm thanh thật ngay bên dưới bằng setPadSound
+      color: neonPalette[newIndex % neonPalette.length]
+    };
+    padData.push(newPad); // Thêm vào cuối mảng, không đụng tới pad cũ
+
+    const cell = createPadElement(newPad, newIndex);
+    padGrid.appendChild(cell); // Nối thêm xuống dưới lưới, không đè pad đang có
+    setPadSound(newPad, file); // Gán đúng file âm thanh vừa chọn cho pad mới này
+    lastCell = cell;
+  });
+
+  bulkStatusEl.textContent = `Đã thêm ${files.length} pad mới (Pad ${firstNewNumber} -> Pad ${padData.length}).`;
+  // Cuộn tới pad mới thêm cuối cùng để người dùng thấy ngay kết quả
+  if(lastCell) lastCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Tự xoá thông báo sau vài giây cho gọn giao diện
+  setTimeout(() => { bulkStatusEl.textContent = ''; }, 6000);
+
+  bulkPadInput.value = '';
+});
+
+// Phím tắt bàn phím cho Pad: bấm phím tương ứng = bấm nút Pad đó
+document.addEventListener('keydown', (e) => {
+  // Bỏ qua khi người dùng đang gõ chữ vào ô nhập liệu (tránh xung đột)
+  const ae = document.activeElement;
+  const isTyping = ae && (
+    ae.tagName === 'TEXTAREA' ||
+    (ae.tagName === 'INPUT' && !['range','checkbox','radio','file','button'].includes(ae.type))
+  );
+  if(isTyping) return;
+
+  const key = e.key.toUpperCase();
+  const index = padShortcuts.indexOf(key);
+  if(index === -1) return;
+
+  const pad = padData[index];
+  if(!pad) return;
+
+  const btn = document.getElementById('btn-' + pad.id);
+  if(btn){
+    btn.click(); // Giả lập bấm nút Pad tương ứng (dùng lại đúng logic toggle)
+    e.preventDefault();
+  }
+});
+
 </script>
-
-
-</body></html>
+</body>
+</html>
