@@ -4,17 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zinh Doan ~ AVL ~ Sound and Event Tool</title>
-<meta name="description" content="Bộ công cụ kỹ thuật Âm thanh - Ánh sáng - Sự kiện: sơ đồ LED, soundboard, đếm ngược thuyết trình, tính DMX, tính điện, kịch bản chương trình — thực hiện bởi Zinh Doan, Freelancer AVL.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-label%3D%22Slice%20LED%20logo%22%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23ef4444%22/%3E%3Crect%20x%3D%2217%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%2310b981%22/%3E%3Crect%20x%3D%221%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%233b82f6%22/%3E%3Crect%20x%3D%2217%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23f59e0b%22/%3E%3C/svg%3E">
 <script>
-/* Áp theme đã lưu (nếu có) trước khi CSS vẽ ra, tránh nháy sai theme.
-   Chưa chọn gì thì mặc định theo theme sáng/tối của hệ điều hành. */
 try{
   var _t = localStorage.getItem('avltools-theme');
   if(_t === 'light' || _t === 'dark') document.documentElement.setAttribute('data-theme', _t);
 }catch(e){}
 </script>
 <style>
+
 :root{
   --bg:#f2f4f8; --panel:#ffffff; --panel2:#f7f9fc; --line:#dde2ea;
   --txt:#141922; --dim:#5d6675; --dim2:#8d97a6;
@@ -103,176 +101,165 @@ a{color:inherit}
 .credit b{color:var(--dim)}
 .credit a{color:var(--accent);text-decoration:none}
 .credit a:hover{text-decoration:underline}
+
+
+/* ===== Màn hình khóa mật khẩu ===== */
+.lockwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:linear-gradient(160deg,#dce6f7,#eef1fb);}
+:root[data-theme="dark"] .lockwrap{background:linear-gradient(160deg,#101018,#181a24);}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .lockwrap{background:linear-gradient(160deg,#101018,#181a24);}}
+.lockcard{background:#fff;border-radius:18px;box-shadow:0 20px 50px -20px rgba(20,25,60,.35);
+  padding:36px 32px;max-width:380px;width:100%;text-align:center;}
+:root[data-theme="dark"] .lockcard{background:#181920;}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .lockcard{background:#181920;}}
+.lockicon{width:64px;height:64px;margin:0 auto 16px;border-radius:50%;
+  background:linear-gradient(145deg,#ffcf7a,#f5a623);display:flex;align-items:center;justify-content:center;font-size:30px;
+  box-shadow:0 8px 20px -6px rgba(245,166,35,.6);}
+.locktitle{font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:700;color:#1c2541;margin-bottom:6px;}
+:root[data-theme="dark"] .locktitle{color:#ececed;}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .locktitle{color:#ececed;}}
+.locksub{font-size:13px;color:#697086;margin-bottom:22px;line-height:1.5;}
+:root[data-theme="dark"] .locksub{color:#9498a3;}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .locksub{color:#9498a3;}}
+.lockinput{width:100%;padding:12px 14px;border-radius:9px;border:1.5px solid #d7dced;
+  font-size:14px;margin-bottom:6px;outline:none;box-sizing:border-box;background:#fff;color:#1c2541;font-family:inherit;}
+.lockinput:focus{border-color:#3b6fea;box-shadow:0 0 0 3px rgba(59,111,234,.15);}
+:root[data-theme="dark"] .lockinput{background:#101116;border-color:#2b2b33;color:#ececed;}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .lockinput{background:#101116;border-color:#2b2b33;color:#ececed;}}
+.lockerror{color:#dc2626;font-size:12.5px;margin:4px 0 10px;text-align:left;display:none;}
+.lockbtn{width:100%;padding:12px;border:0;border-radius:9px;background:#3b6fea;color:#fff;
+  font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;transition:filter .15s;font-family:inherit;}
+.lockbtn:hover{filter:brightness(.92);}
+.lockbtn:disabled{opacity:.6;cursor:default;}
+.lockhr{border:0;border-top:1px solid #e6e9f2;margin:22px 0 16px;}
+:root[data-theme="dark"] .lockhr{border-top-color:#2b2b33;}
+.lockfooter{font-size:11.5px;color:#8a90a6;line-height:1.6;}
+.lockfooter a{color:#3b6fea;text-decoration:none;}
+.lockfooter a:hover{text-decoration:underline;}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-  <header class="topbar">
-    <div class="logo"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AVL Tools logo"><rect x="1" y="1" width="14" height="14" rx="3" fill="#ef4444"/><rect x="17" y="1" width="14" height="14" rx="3" fill="#10b981"/><rect x="1" y="17" width="14" height="14" rx="3" fill="#3b82f6"/><rect x="17" y="17" width="14" height="14" rx="3" fill="#f59e0b"/></svg></div>
-    <div>
-      <div class="brand-name">Zinh Doan ~ AVL ~ Sound and Event Tool</div>
-      <div class="brand-sub">Bộ công cụ kỹ thuật Âm thanh · Ánh sáng · Sự kiện</div>
+<div id="lockScreen" class="lockwrap">
+  <div class="lockcard">
+    <div class="lockicon">🔒</div>
+    <h1 class="locktitle">Zinh Doan ~ AVL ~ Sound and Event Tool</h1>
+    <p class="locksub">Nội dung đã được mã hóa. Vui lòng nhập mật khẩu để xem.</p>
+    <input type="password" id="pwInput" class="lockinput" placeholder="Nhập mật khẩu" autocomplete="off">
+    <div id="lockError" class="lockerror">Sai mật khẩu, vui lòng thử lại.</div>
+    <button type="button" id="btnUnlock" class="lockbtn">Mở khóa</button>
+    <hr class="lockhr">
+    <div class="lockfooter">
+      Vui lòng liên hệ <b>Zinh Doan</b> · Freelancer AVL<br>
+      Gmail: <a href="mailto:Huuvinhit98@gmail.com">Huuvinhit98@gmail.com</a> · SĐT: <a href="tel:0986416678">0986 416 678</a>
     </div>
-    <div class="right">
-      <button type="button" class="theme-toggle" id="theme-toggle" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng/tối">
-        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-        <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 1 0 20.354 15.354Z"/></svg>
-      </button>
-      <a class="gh" href="https://github.com/huuvinhdocthan/mapLed" target="_blank" rel="noopener">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
-          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01
-          1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
-          0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68
-          0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0
-          3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01
-          8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-        GitHub
-      </a>
-    </div>
-  </header>
-
-  <section class="hero">
-    <h1>Zinh Doan ~ AVL ~ Sound and Event Tool</h1>
-    <p>Bộ công cụ web chạy offline (không cần cài đặt, không cần server) phục vụ công việc kỹ thuật Âm thanh - Ánh sáng - Sự kiện: dựng sơ đồ LED cho Resolume, phát nhạc sự kiện, đếm ngược thời gian thuyết trình, tính địa chỉ DMX, tính công suất điện và quản lý kịch bản chương trình.</p>
-  </section>
-
-  <div class="section-label">Đang dùng được</div>
-  <div class="grid">
-
-    <a class="tool" href="mapping_led.html">
-      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="14" height="14" rx="3" fill="#ef4444"/><rect x="17" y="1" width="14" height="14" rx="3" fill="#10b981"/><rect x="1" y="17" width="14" height="14" rx="3" fill="#3b82f6"/><rect x="17" y="17" width="14" height="14" rx="3" fill="#f59e0b"/></svg></div>
-      <h2>LED Slice Mapper</h2>
-      <p>Sắp xếp các slice LED, tự tính Width/Height Composition cho Resolume, kéo thả & snap dính cạnh, xoay góc tự do, cắt hình tròn/đa giác tùy chỉnh, xuất ảnh test pattern PNG 1:1.</p>
-      <div class="tags">
-        <span class="tag">Resolume</span>
-        <span class="tag">Composition</span>
-        <span class="tag">Test pattern</span>
-      </div>
-      <div class="open">Mở công cụ →</div>
-    </a>
-
-    <a class="tool" href="soundboard.html">
-      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="12" width="4" height="8" rx="2" fill="#8b5cf6"/><rect x="9" y="6" width="4" height="20" rx="2" fill="#8b5cf6"/><rect x="16" y="2" width="4" height="28" rx="2" fill="#8b5cf6"/><rect x="23" y="8" width="4" height="16" rx="2" fill="#8b5cf6"/></svg></div>
-      <h2>Soundboard sự kiện</h2>
-      <p>Kéo thả file nhạc/hiệu ứng vào trang, gán phím tắt phát tức thì, fade in/out khi chuyển bài, playlist tự chuyển bài kế tiếp, và nút Panic/Fade Out All để xử lý gấp khi đang live.</p>
-      <div class="tags">
-        <span class="tag">Soundboard</span>
-        <span class="tag">Phím tắt</span>
-        <span class="tag">Fade</span>
-      </div>
-      <div class="open">Mở công cụ →</div>
-    </a>
-
-    <a class="tool" href="countdown.html">
-      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="16" cy="17" r="13" fill="none" stroke="#16a34a" stroke-width="3"/>
-        <path d="M16 9 V17 L22 20" stroke="#16a34a" stroke-width="3" stroke-linecap="round" fill="none"/>
-        <rect x="12" y="1" width="8" height="3" rx="1.5" fill="#16a34a"/>
-      </svg></div>
-      <h2>Đếm ngược sự kiện</h2>
-      <p>Đồng hồ đếm ngược cho MC/diễn giả khi thuyết trình PPT — cảnh báo vàng/đỏ, tự chuyển sang đếm vượt giờ khi hết, chế độ trình chiếu toàn màn hình, có âm thanh cảnh báo.</p>
-      <div class="tags">
-        <span class="tag">Presentation Timer</span>
-        <span class="tag">Trình chiếu</span>
-      </div>
-      <div class="open">Mở công cụ →</div>
-    </a>
-
-    <a class="tool" href="dmx_calculator.html">
-      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <rect x="4" y="4" width="4" height="24" rx="2" fill="#f59e0b" opacity=".25"/>
-        <rect x="2" y="18" width="8" height="5" rx="2" fill="#f59e0b"/>
-        <rect x="14" y="4" width="4" height="24" rx="2" fill="#f59e0b" opacity=".25"/>
-        <rect x="12" y="8" width="8" height="5" rx="2" fill="#f59e0b"/>
-        <rect x="24" y="4" width="4" height="24" rx="2" fill="#f59e0b" opacity=".25"/>
-        <rect x="22" y="14" width="8" height="5" rx="2" fill="#f59e0b"/>
-      </svg></div>
-      <h2>DMX Calculator</h2>
-      <p>Nhập số lượng đèn và số kênh (channel) mỗi đèn, tự động tính địa chỉ DMX bắt đầu cho từng đèn, tự chia sang Universe kế tiếp khi vượt 512 kênh, cảnh báo trùng địa chỉ, bản đồ kênh trực quan và xuất patch list .txt.</p>
-      <div class="tags">
-        <span class="tag">DMX 512</span>
-        <span class="tag">Địa chỉ đèn</span>
-        <span class="tag">Patch list</span>
-      </div>
-      <div class="open">Mở công cụ →</div>
-    </a>
-
-    <a class="tool" href="power_calculator.html">
-      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M18 2 L6 18 H14 L12 30 L27 12 H18 Z" fill="#ef4444"/></svg></div>
-      <h2>Power Calculator</h2>
-      <p>Nhập số lượng và công suất (Watt) từng loại thiết bị, tự động cộng tổng và quy đổi ra dòng điện (Ampere) theo pha/điện áp, cảnh báo lệch tải giữa các pha, gợi ý CB &amp; tiết diện dây, xuất báo cáo .txt.</p>
-      <div class="tags">
-        <span class="tag">Watt → Ampere</span>
-        <span class="tag">Cân tải 3 pha</span>
-        <span class="tag">CB &amp; dây dẫn</span>
-      </div>
-      <div class="open">Mở công cụ →</div>
-    </a>
-
-    <a class="tool" href="pad_play_music_2.html">
-      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="12" height="12" rx="3" fill="#00cfc7"/><rect x="18" y="2" width="12" height="12" rx="3" fill="#e0159e"/><rect x="2" y="18" width="12" height="12" rx="3" fill="#8b5cf6"/><rect x="18" y="18" width="12" height="12" rx="3" fill="#caa300"/></svg></div>
-      <h2>Pad Play Music 2</h2>
-      <p>Music Player nhạc nền tự chuyển bài + DJ Sound Pad 15 nút hiệu ứng/nhạc dẫn MC, phím tắt bàn phím, thêm hàng loạt Pad cùng lúc, giao diện cyberpunk dark mode riêng.</p>
-      <div class="tags">
-        <span class="tag">Music Player</span>
-        <span class="tag">DJ Pad</span>
-        <span class="tag">Phím tắt</span>
-      </div>
-      <div class="open">Mở công cụ →</div>
-    </a>
-
   </div>
-
-  <div class="section-label">Sắp ra mắt</div>
-  <div class="grid">
-
-    <div class="tool soon">
-      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="16" cy="17" r="13" fill="none" stroke="#3b82f6" stroke-width="3"/>
-        <path d="M16 9 V17 L22 20" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" fill="none"/>
-        <rect x="12" y="1" width="8" height="3" rx="1.5" fill="#3b82f6"/>
-      </svg></div>
-      <h2>Run of Show</h2>
-      <p>Bảng kịch bản chương trình sửa trực tiếp trên màn hình — thời gian, nội dung, người phụ trách — tự động đếm ngược đến tiết mục tiếp theo.</p>
-      <div class="tags">
-        <span class="tag">Kịch bản</span>
-        <span class="tag">Đếm ngược</span>
-      </div>
-      <div class="badge">Sắp ra mắt</div>
-    </div>
-
-    <!--
-      Khi 1 tool ở trên được làm xong: đổi <div class="tool soon"> thành <a class="tool" href="ten-file.html">,
-      thay khối <div class="badge">Sắp ra mắt</div> bằng <div class="open">Mở công cụ →</div>,
-      rồi cắt cả khối di chuyển lên nhóm "Đang dùng được" phía trên.
-    -->
-
-  </div>
-
 </div>
-
-<footer class="credit">
-  Công cụ được thực hiện bởi <b>Zinh Doan</b> · Freelancer AVL &nbsp;|&nbsp;
-  Gmail: <a href="mailto:Huuvinhit98@gmail.com">Huuvinhit98@gmail.com</a> &nbsp;|&nbsp;
-  SĐT: <a href="tel:0986416678">0986 416 678</a>
-  <div style="margin-top:6px;font-size:10px">© 2026 Zinh Doan. Bảo lưu mọi quyền — nghiêm cấm sao chép, phân phối lại hoặc sử dụng lại mã nguồn khi chưa có sự đồng ý bằng văn bản.</div>
-</footer>
+<div id="realContent" style="display:none"></div>
 
 <script>
+(function(){
 "use strict";
-function effectiveTheme(){
-  var explicit = document.documentElement.getAttribute('data-theme');
-  if(explicit === 'light' || explicit === 'dark') return explicit;
-  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+var SALT_HEX = "a13f9c02e7b4d68f5a0c3e91b7d4f620";
+var IV_HEX = "25ee8a958500e3d9e7483bf0";
+var CT_B64 = "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";
+
+function hexToBytes(hex){
+  var bytes = new Uint8Array(hex.length/2);
+  for(var i=0;i<bytes.length;i++) bytes[i] = parseInt(hex.substr(i*2,2),16);
+  return bytes;
 }
-function applyTheme(t){
-  document.documentElement.setAttribute('data-theme', t);
-  try{ localStorage.setItem('avltools-theme', t); }catch(e){}
+function base64ToBytes(b64){
+  var bin = atob(b64);
+  var bytes = new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
 }
-document.getElementById('theme-toggle').onclick = function(){
-  applyTheme(effectiveTheme()==='dark' ? 'light' : 'dark');
-};
+function bytesToBase64(bytes){
+  var binary = '';
+  var chunk = 0x8000;
+  for(var i=0;i<bytes.length;i+=chunk){
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk));
+  }
+  return btoa(binary);
+}
+
+var SALT = hexToBytes(SALT_HEX);
+var IV = hexToBytes(IV_HEX);
+var CT = base64ToBytes(CT_B64);
+
+function deriveKeyFromPassword(password){
+  var enc = new TextEncoder();
+  return crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']).then(function(baseKey){
+    return crypto.subtle.deriveKey(
+      { name:'PBKDF2', salt: SALT, iterations: 300000, hash:'SHA-256' },
+      baseKey, { name:'AES-GCM', length:256 }, true, ['decrypt']
+    );
+  });
+}
+function importRawKey(rawB64){
+  return crypto.subtle.importKey('raw', base64ToBytes(rawB64), {name:'AES-GCM'}, true, ['decrypt']);
+}
+function decryptWithKey(key){
+  return crypto.subtle.decrypt({name:'AES-GCM', iv: IV}, key, CT).then(function(buf){
+    return new TextDecoder().decode(buf);
+  });
+}
+function revealContent(html){
+  var scripts = [];
+  var markup = html.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, function(m, code){
+    scripts.push(code);
+    return '';
+  });
+  document.getElementById('realContent').innerHTML = markup;
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('realContent').style.display = '';
+  scripts.forEach(function(code){
+    var s = document.createElement('script');
+    s.textContent = code;
+    document.body.appendChild(s);
+  });
+}
+function showError(msg){
+  var el = document.getElementById('lockError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function tryUnlock(password){
+  return deriveKeyFromPassword(password).then(function(key){
+    return decryptWithKey(key).then(function(html){
+      return crypto.subtle.exportKey('raw', key).then(function(raw){
+        try{ sessionStorage.setItem('avltools-lockkey', bytesToBase64(new Uint8Array(raw))); }catch(e){}
+        revealContent(html);
+      });
+    });
+  });
+}
+
+function tryAutoUnlock(){
+  var cached;
+  try{ cached = sessionStorage.getItem('avltools-lockkey'); }catch(e){ cached = null; }
+  if(!cached) return;
+  importRawKey(cached).then(decryptWithKey).then(revealContent).catch(function(){ /* im lặng, hiện màn hình nhập mật khẩu */ });
+}
+tryAutoUnlock();
+
+var btn = document.getElementById('btnUnlock');
+var pwInput = document.getElementById('pwInput');
+function doUnlock(){
+  var pw = pwInput.value;
+  if(!pw) return;
+  document.getElementById('lockError').style.display = 'none';
+  btn.disabled = true; btn.textContent = 'Đang mở...';
+  tryUnlock(pw).catch(function(){
+    showError('Sai mật khẩu, vui lòng thử lại.');
+  }).then(function(){
+    btn.disabled = false; btn.textContent = 'Mở khóa';
+  });
+}
+btn.addEventListener('click', doUnlock);
+pwInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') doUnlock(); });
+})();
 </script>
 </body>
 </html>
