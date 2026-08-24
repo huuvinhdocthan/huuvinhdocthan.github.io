@@ -37,14 +37,5 @@ Repo này là repo **user site** (`huuvinhdocthan.github.io`) nên GitHub Pages 
    - Nếu là tool hoàn toàn mới: copy khối `<a class="tool">...</a>` có sẵn, sửa `href`, icon, tiêu đề, mô tả, tag cho phù hợp.
 3. Commit & push — nếu đã bật GitHub Pages ở bước trên thì trang tổng tự cập nhật, không cần làm gì thêm.
 
-## Cập nhật & đẩy lên GitHub
-
-```bash
-git add .
-git commit -m "Mô tả thay đổi"
-git push
-```
-
 ## Bản quyền
-
 © 2026 Zinh Doan. Bảo lưu mọi quyền — xem chi tiết ở file [`LICENSE`](./LICENSE). Đây không phải phần mềm mã nguồn mở; nghiêm cấm sao chép, phân phối lại hoặc sử dụng lại mã nguồn khi chưa có sự đồng ý bằng văn bản.
