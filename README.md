@@ -3,7 +3,6 @@
 Bộ công cụ web tĩnh (chạy offline, không cần server/backend) phục vụ công việc kỹ thuật Âm thanh - Ánh sáng - Sự kiện. Thực hiện bởi **Zinh Doan — Freelancer AVL**.
 
 - Gmail: Huuvinhit98@gmail.com
-- SĐT: 0986 416 678
 
 ## Cấu trúc
 
