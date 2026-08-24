@@ -1,0 +1,64 @@
+Copyright (c) 2026 Đoàn Hữu Vinh (Zinh Doan)
+Bảo lưu mọi quyền / All Rights Reserved.
+
+
+TIẾNG VIỆT
+----------
+Toàn bộ mã nguồn, thiết kế giao diện và nội dung trong kho lưu trữ này
+("Zinh Doan ~ AVL ~ Sound and Event Tool", bao gồm các file index.html,
+mapping_led.html, soundboard.html, countdown.html, dmx_calculator.html,
+power_calculator.html, pad_play_music_2.html và mọi file liên quan)
+thuộc quyền sở hữu của Đoàn Hữu Vinh (Zinh Doan). Đây KHÔNG phải là
+phần mềm mã nguồn mở (open-source) và không đi kèm giấy phép mã nguồn
+mở nào (MIT, GPL, v.v.).
+
+Nghiêm cấm các hành vi sau đối với toàn bộ hoặc một phần mã nguồn/nội
+dung trong kho lưu trữ này khi chưa có sự đồng ý bằng văn bản của tác giả:
+  - Sao chép, phân phối lại, hoặc phát hành lại dưới tên/thương hiệu khác.
+  - Chỉnh sửa rồi công bố lại như sản phẩm của bên khác.
+  - Sử dụng cho mục đích thương mại (bán, cho thuê, tích hợp vào sản
+    phẩm/dịch vụ khác để thu phí).
+  - Đóng gói lại thành dịch vụ SaaS hoặc phần mềm đóng gói khác.
+
+Bạn được phép truy cập và sử dụng trực tiếp các công cụ tại trang web
+này cho mục đích cá nhân hoặc công việc của bạn (ví dụ: dùng để tính
+DMX, đếm ngược sự kiện, phát nhạc...). Việc trình duyệt hiển thị được
+mã nguồn (View Source/DevTools) không đồng nghĩa với việc bạn được cấp
+quyền sao chép, tái sử dụng hay phân phối lại mã nguồn đó.
+
+Mọi yêu cầu xin phép sử dụng lại, hợp tác, hoặc báo cáo vi phạm xin
+liên hệ:
+  Gmail : Huuvinhit98@gmail.com
+  SĐT   : 0986 416 678
+
+
+ENGLISH
+-------
+All source code, interface design, and content in this repository
+("Zinh Doan ~ AVL ~ Sound and Event Tool", including but not limited to
+index.html, mapping_led.html, soundboard.html, countdown.html,
+dmx_calculator.html, power_calculator.html, pad_play_music_2.html, and
+any related files) are the property of Đoàn Hữu Vinh (Zinh Doan). This
+is NOT open-source software and is not released under any open-source
+license (MIT, GPL, or otherwise).
+
+The following are strictly prohibited without prior written permission
+from the author, for the whole or any part of the code/content in this
+repository:
+  - Copying, redistributing, or republishing under a different name or
+    brand.
+  - Modifying and republishing as another party's own work.
+  - Commercial use (selling, renting, or bundling into another paid
+    product or service).
+  - Repackaging as a SaaS product or any other packaged software.
+
+You are welcome to access and use the tools on this website directly
+for your own personal or professional purposes (e.g. DMX address
+calculation, event countdown timers, music playback, etc.). The fact
+that a browser can display the source code (View Source/DevTools) does
+not grant any right to copy, reuse, or redistribute that source code.
+
+For permission requests, collaboration inquiries, or to report a
+violation, please contact:
+  Email : Huuvinhit98@gmail.com
+  Phone : +84 986 416 678

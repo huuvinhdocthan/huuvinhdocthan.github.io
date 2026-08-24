@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMX Calculator — Zinh Doan AVL Tools</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-label%3D%22Slice%20LED%20logo%22%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23ef4444%22/%3E%3Crect%20x%3D%2217%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%2310b981%22/%3E%3Crect%20x%3D%221%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%233b82f6%22/%3E%3Crect%20x%3D%2217%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23f59e0b%22/%3E%3C/svg%3E">
+<script>
+/* Áp theme đã lưu (nếu có) trước khi CSS vẽ ra, tránh nháy sai theme.
+   Chưa chọn gì thì mặc định theo theme sáng/tối của hệ điều hành (mặc định gốc là sáng). */
+try{
+  var _t = localStorage.getItem('avltools-theme');
+  if(_t === 'light' || _t === 'dark') document.documentElement.setAttribute('data-theme', _t);
+}catch(e){}
+</script>
+<style>
+:root{
+  --bg:#f2f4f8; --panel:#ffffff; --panel2:#f7f9fc; --line:#dde2ea;
+  --txt:#141922; --dim:#5d6675; --dim2:#8d97a6;
+  --accent:#0e7c66; --amber:#b45309; --red:#dc2626;
+  --chip-bg:#eaf3f0; --chip-border:#cfe3dc;
+  --hover-bg:#eef1f6; --hover-border:#c8d0dc;
+  --danger-bg:#fef2f2; --danger-border:#f6cfcf;
+  --danger-hover-bg:#fde3e3; --danger-hover-border:#eeb4b4;
+  --warn-bg:#fdf6e7; --warn-border:#f0dcb0; --warn-txt:#8a5a08;
+  --shadow:0 1px 2px rgba(20,25,34,.05), 0 8px 24px -12px rgba(20,25,34,.18);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e0e11; --panel:#17171c; --panel2:#1d1d23; --line:#2b2b33;
+    --txt:#ececed; --dim:#9498a3; --dim2:#6b6e78;
+    --accent:#2dd4bf; --amber:#f59e0b; --red:#ef4444;
+    --chip-bg:#0f2b25; --chip-border:#1c4a3d;
+    --hover-bg:#22232b; --hover-border:#3a3b45;
+    --danger-bg:#3a1414; --danger-border:#5c2323;
+    --danger-hover-bg:#4a1a1a; --danger-hover-border:#6e2b2b;
+    --warn-bg:#3a2e0f; --warn-border:#5c4a1a; --warn-txt:#f0c674;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e0e11; --panel:#17171c; --panel2:#1d1d23; --line:#2b2b33;
+  --txt:#ececed; --dim:#9498a3; --dim2:#6b6e78;
+  --accent:#2dd4bf; --amber:#f59e0b; --red:#ef4444;
+  --chip-bg:#0f2b25; --chip-border:#1c4a3d;
+  --hover-bg:#22232b; --hover-border:#3a3b45;
+  --danger-bg:#3a1414; --danger-border:#5c2323;
+  --danger-hover-bg:#4a1a1a; --danger-hover-border:#6e2b2b;
+  --warn-bg:#3a2e0f; --warn-border:#5c4a1a; --warn-txt:#f0c674;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--txt); padding:18px;
+  font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; font-size:14px;
+}
+.topbar{max-width:1800px;margin:0 auto 18px;display:flex;align-items:center;gap:12px;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:var(--shadow)}
+.topbar .logo{width:34px;height:34px;flex:0 0 auto;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px rgba(20,25,34,.15)}
+.topbar .logo svg{display:block;width:100%;height:100%}
+.topbar .brand-name{font-size:15px;font-weight:700;letter-spacing:.01em;line-height:1.2}
+.topbar .brand-sub{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.topbar .brand-link{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.topbar .right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.topbar .home{font-size:12px;color:var(--dim);text-decoration:none;
+  border:1px solid var(--line);border-radius:8px;padding:6px 12px;white-space:nowrap}
+.topbar .home:hover{background:var(--panel2);color:var(--txt);border-color:var(--dim2)}
+.theme-toggle{display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;flex:0 0 auto;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--dim);cursor:pointer}
+.theme-toggle:hover{color:var(--txt);border-color:var(--dim2);background:var(--hover-bg)}
+.theme-toggle svg{width:16px;height:16px}
+.theme-toggle .i-sun{display:block}
+.theme-toggle .i-moon{display:none}
+:root[data-theme="dark"] .theme-toggle .i-sun{display:none}
+:root[data-theme="dark"] .theme-toggle .i-moon{display:block}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .theme-toggle .i-sun{display:none}
+  :root:not([data-theme="light"]) .theme-toggle .i-moon{display:block}
+}
+
+.wrap{max-width:1800px;margin:0 auto;display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+h1{font-size:18px;color:var(--accent);margin-bottom:2px}
+.sub{font-size:11px;color:var(--dim)}
+h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+button{font-family:inherit;font-size:13px;border-radius:8px;cursor:pointer;border:1px solid var(--line);
+  background:var(--panel);color:var(--txt);padding:8px 12px;transition:.15s;box-shadow:0 1px 1px rgba(20,25,34,.04)}
+button:hover{background:var(--hover-bg);border-color:var(--hover-border)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;width:100%;padding:10px}
+button.primary:hover{filter:brightness(.9)}
+button.danger{background:var(--danger-bg);border-color:var(--danger-border);color:var(--red)}
+button.danger:hover{background:var(--danger-hover-bg);border-color:var(--danger-hover-border)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label.f{display:block;font-size:10px;color:var(--dim2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+input[type=number],input[type=text],select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:6px;
+  color:var(--txt);padding:6px 8px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+select{cursor:pointer}
+input:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,124,102,.14)}
+.chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);cursor:pointer;user-select:none;margin-top:8px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center}
+.stat .k{display:block;font-size:9px;color:var(--dim2);text-transform:uppercase;letter-spacing:.06em}
+.stat .v{font-family:ui-monospace,Consolas,monospace;font-size:18px;font-weight:700;color:var(--amber)}
+.note{font-size:11px;color:var(--dim2);line-height:1.5;margin-top:8px}
+.warn{background:var(--warn-bg);border:1px solid var(--warn-border);color:var(--warn-txt);
+  border-radius:8px;padding:8px 10px;font-size:11px;line-height:1.5;margin-top:10px}
+#list{display:flex;flex-direction:column;gap:10px;max-height:40vh;overflow-y:auto;padding-right:4px}
+.item{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:10px}
+.item .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.item .hd .nm{font-weight:600;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .meta{font-size:11px;color:var(--dim);line-height:1.5}
+.item .addr{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--accent);margin-top:4px;
+  background:var(--chip-bg);border:1px solid var(--chip-border);border-radius:6px;padding:4px 7px;display:inline-block}
+.item .span-warn{color:var(--warn-txt);font-size:10.5px;margin-top:4px}
+.x{background:transparent;border:0;color:var(--dim2);font-size:12px;padding:2px 4px}
+.x:hover{color:var(--red);background:transparent}
+.x:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px}
+.empty{color:var(--dim2);font-size:12px;text-align:center;padding:24px 0}
+
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:12px;
+  color:var(--dim);margin-bottom:14px;box-shadow:var(--shadow)}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;background:var(--panel);border:1px solid var(--line);
+  border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:14px;font-size:12px}
+.legend .row-l{display:flex;align-items:center;gap:7px;color:var(--dim)}
+.legend .sw{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+.legend .empty{padding:0;font-size:12px}
+
+.uCard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  box-shadow:var(--shadow);margin-bottom:14px}
+.uHead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.uHead b{font-size:14px;color:var(--accent)}
+.uHead span{font-size:11px;color:var(--dim)}
+.uGrid{display:grid;grid-template-columns:repeat(32,1fr);gap:2px}
+.cell{aspect-ratio:1;border-radius:2px;background:var(--panel2);border:1px solid var(--line)}
+.cell.on{border-color:transparent}
+
+.credit{max-width:1800px;margin:18px auto 4px;text-align:center;font-size:11px;color:var(--dim2);
+  padding-top:14px;border-top:1px solid var(--line)}
+.credit b{color:var(--dim)}
+.credit a{color:var(--accent);text-decoration:none}
+.credit a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand-link" href="index.html">
+    <div class="logo"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Slice LED logo"><rect x="1" y="1" width="14" height="14" rx="3" fill="#ef4444"/><rect x="17" y="1" width="14" height="14" rx="3" fill="#10b981"/><rect x="1" y="17" width="14" height="14" rx="3" fill="#3b82f6"/><rect x="17" y="17" width="14" height="14" rx="3" fill="#f59e0b"/></svg></div>
+    <div>
+      <div class="brand-name">Zinh Doan ~ AVL ~ Sound and Event Tool</div>
+      <div class="brand-sub">DMX Calculator — Bảng tính địa chỉ DMX</div>
+    </div>
+  </a>
+  <div class="right">
+    <button type="button" class="theme-toggle" id="theme-toggle" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng/tối">
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 1 0 20.354 15.354Z"/></svg>
+    </button>
+    <a class="home" href="index.html">&larr; Trang tổng</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ================= PANEL ================= -->
+  <div class="card">
+    <h1>DMX Calculator</h1>
+    <p class="sub">Tính địa chỉ DMX bắt đầu cho từng đèn, tự động chia Universe khi vượt 512 kênh</p>
+
+    <hr>
+
+    <h2>Thêm nhóm đèn</h2>
+    <label class="f">Tên nhóm</label>
+    <input type="text" id="gName" placeholder="VD: Par LED sân khấu">
+    <div class="row" style="margin-top:8px">
+      <div><label class="f">Số lượng đèn</label><input type="number" id="gQty" value="8" min="1"></div>
+      <div><label class="f">Kênh / đèn</label><input type="number" id="gCh" value="3" min="1" max="512"></div>
+    </div>
+    <label class="f" style="margin-top:8px">Loại đèn (gợi ý số kênh)</label>
+    <select id="gPreset">
+      <option value="">— Tùy chỉnh —</option>
+      <option value="1">Dimmer / đèn đơn (1ch)</option>
+      <option value="2">Strobe / Fog machine (2ch)</option>
+      <option value="3">Par LED RGB (3ch)</option>
+      <option value="4">Par LED RGBW (4ch)</option>
+      <option value="6">Par LED RGBWA+UV (6ch)</option>
+      <option value="8">Moving Head Wash cơ bản (8ch)</option>
+      <option value="16">Moving Head Spot/Beam (16ch)</option>
+      <option value="20">Moving Head nâng cao (20ch)</option>
+    </select>
+    <label class="chk"><input type="checkbox" id="gForceNew"> Bắt đầu Universe mới cho nhóm này</label>
+    <label class="chk"><input type="checkbox" id="gManual"> Đặt địa chỉ bắt đầu thủ công</label>
+    <div class="row" id="gManualRow" style="margin-top:6px;display:none">
+      <div><label class="f">Universe</label><input type="number" id="gManualU" value="1" min="1"></div>
+      <div><label class="f">Kênh bắt đầu</label><input type="number" id="gManualC" value="1" min="1" max="512"></div>
+    </div>
+    <button class="primary" id="btn-add" style="margin-top:10px">+ Thêm nhóm đèn</button>
+
+    <hr>
+
+    <h2>Tổng quan</h2>
+    <div class="g3">
+      <div class="stat"><span class="k">Tổng đèn</span><span class="v" id="s-fixtures">0</span></div>
+      <div class="stat"><span class="k">Tổng kênh</span><span class="v" id="s-channels">0</span></div>
+      <div class="stat"><span class="k">Universe</span><span class="v" id="s-universe">0</span></div>
+    </div>
+    <div id="warn"></div>
+
+    <hr>
+
+    <div class="row">
+      <button id="btn-export">Xuất patch .txt</button>
+      <button class="danger" id="btn-clear">Xóa tất cả</button>
+    </div>
+
+    <hr>
+
+    <h2>Danh sách nhóm đèn (<span id="cnt">0</span>)</h2>
+    <div id="list"><div class="empty">Chưa có nhóm đèn nào.</div></div>
+  </div>
+
+  <!-- ================= MAP ================= -->
+  <div>
+    <div class="bar">
+      <div>Bản đồ kênh DMX — mỗi ô là 1 kênh (1–512 / Universe), di chuột vào ô để xem chi tiết</div>
+    </div>
+    <div id="legend" class="legend"><div class="empty">Chưa có nhóm đèn nào — thêm nhóm ở bên trái để xem bản đồ kênh.</div></div>
+    <div id="universes"></div>
+  </div>
+
+</div>
+
+<footer class="credit">
+  Công cụ được thực hiện bởi <b>Zinh Doan</b> · Freelancer AVL &nbsp;|&nbsp;
+  Gmail: <a href="mailto:Huuvinhit98@gmail.com">Huuvinhit98@gmail.com</a> &nbsp;|&nbsp;
+  SĐT: <a href="tel:0986416678">0986 416 678</a>
+  <div style="margin-top:6px;font-size:10px">© 2026 Zinh Doan. Bảo lưu mọi quyền — nghiêm cấm sao chép, phân phối lại hoặc sử dụng lại mã nguồn khi chưa có sự đồng ý bằng văn bản.</div>
+</footer>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const COLORS = ['#ef4444','#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899','#14b8a6','#f97316'];
+const UNIVERSE_SIZE = 512;
+
+let groups = [];
+let seq = 0;
+
+/* ---------- form: preset & manual toggle ---------- */
+$('gPreset').onchange = ()=>{ if($('gPreset').value) $('gCh').value = $('gPreset').value; };
+$('gManual').onchange = ()=>{ $('gManualRow').style.display = $('gManual').checked ? 'grid' : 'none'; };
+
+function addGroup(){
+  const name = $('gName').value.trim() || ('Nhóm '+(seq+1));
+  const qty = Math.max(1, parseInt($('gQty').value,10)||0);
+  const ch = Math.max(1, Math.min(512, parseInt($('gCh').value,10)||0));
+  const forceNew = $('gForceNew').checked;
+  const manual = $('gManual').checked;
+  const manualU = Math.max(1, parseInt($('gManualU').value,10)||1);
+  const manualC = Math.max(1, Math.min(512, parseInt($('gManualC').value,10)||1));
+  seq++;
+  groups.push({ id:seq, name, qty, ch, color:COLORS[(seq-1)%COLORS.length], forceNew, manual, manualU, manualC });
+  $('gName').value = '';
+  renderAll();
+}
+function delGroup(id){ groups = groups.filter(g=>g.id!==id); renderAll(); }
+function setProp(id, prop, val){
+  const g = groups.find(o=>o.id===id); if(!g) return;
+  if(prop==='name') g.name = val || g.name;
+  else if(prop==='forceNew' || prop==='manual') g[prop] = val;
+  else { let n = parseInt(val,10)||0; if(prop!=='manualU') n=Math.max(1,n); g[prop] = n; }
+  renderAll();
+}
+
+/* ---------- tính toán địa chỉ ---------- */
+function computeLayout(){
+  let curU = 1, curC = 1;
+  const layout = [];
+  groups.forEach(g=>{
+    let u, c;
+    if(g.manual){
+      u = g.manualU; c = g.manualC;
+    } else {
+      if(g.forceNew && curC !== 1){ curU++; curC = 1; }
+      u = curU; c = curC;
+    }
+    const fixtures = [];
+    for(let i=0;i<g.qty;i++){
+      if(c + g.ch - 1 > UNIVERSE_SIZE){ u++; c = 1; }
+      fixtures.push({ index:i+1, universe:u, startCh:c, endCh:c+g.ch-1 });
+      c += g.ch;
+    }
+    const last = fixtures[fixtures.length-1];
+    layout.push({ group:g, fixtures,
+      startUniverse: fixtures[0] ? fixtures[0].universe : u,
+      startChannel: fixtures[0] ? fixtures[0].startCh : c,
+      endUniverse: last ? last.universe : u,
+      endChannel: last ? last.endCh : c });
+    if(!g.manual){
+      curU = last ? last.universe : u;
+      curC = last ? last.endCh + 1 : c;
+      if(curC > UNIVERSE_SIZE){ curU++; curC = 1; }
+    }
+  });
+  return layout;
+}
+
+function flat(universe, ch){ return (universe-1)*UNIVERSE_SIZE + ch; }
+function findOverlaps(layout){
+  const out = [];
+  for(let i=0;i<layout.length;i++) for(let j=i+1;j<layout.length;j++){
+    const a=layout[i], b=layout[j];
+    const aS=flat(a.startUniverse,a.startChannel), aE=flat(a.endUniverse,a.endChannel);
+    const bS=flat(b.startUniverse,b.startChannel), bE=flat(b.endUniverse,b.endChannel);
+    if(aS<=bE && bS<=aE) out.push(a.group.name+' ↔ '+b.group.name);
+  }
+  return out;
+}
+
+/* ---------- render ---------- */
+function renderStats(layout){
+  let totalFixtures = 0, totalChannels = 0, maxUniverse = 0;
+  layout.forEach(L=>{
+    totalFixtures += L.group.qty;
+    totalChannels += L.group.qty * L.group.ch;
+    maxUniverse = Math.max(maxUniverse, L.endUniverse);
+  });
+  $('s-fixtures').textContent = totalFixtures;
+  $('s-channels').textContent = totalChannels;
+  $('s-universe').textContent = maxUniverse;
+
+  const ov = findOverlaps(layout);
+  let warnHtml = '';
+  if(ov.length){
+    warnHtml += '<div class="warn"><b>⚠ Địa chỉ đang trùng nhau:</b><br>'+ov.join('<br>')+
+      '<br>Kiểm tra lại các nhóm đặt địa chỉ thủ công để tránh trùng kênh trên console.</div>';
+  }
+  const spanning = layout.filter(L=>L.startUniverse !== L.endUniverse);
+  if(spanning.length){
+    warnHtml += '<div class="warn"><b>⚠ Nhóm trải sang nhiều Universe:</b><br>'+
+      spanning.map(L=>L.group.name+' (Universe '+L.startUniverse+'→'+L.endUniverse+')').join('<br>')+
+      '<br>Cần từ '+ (Math.max(...spanning.map(L=>L.endUniverse))) +' đường DMX/node trở lên để chạy hết nhóm này.</div>';
+  }
+  $('warn').innerHTML = warnHtml;
+}
+
+function fmtAddr(L){
+  if(L.startUniverse === L.endUniverse) return 'Universe '+L.startUniverse+'  ·  Kênh '+L.startChannel+'–'+L.endChannel;
+  return 'Universe '+L.startUniverse+' kênh '+L.startChannel+' → Universe '+L.endUniverse+' kênh '+L.endChannel;
+}
+
+function renderList(layout){
+  $('cnt').textContent = groups.length;
+  const list = $('list');
+  if(!groups.length){ list.innerHTML = '<div class="empty">Chưa có nhóm đèn nào.</div>'; return; }
+  list.innerHTML = '';
+  layout.forEach(L=>{
+    const g = L.group;
+    const d = document.createElement('div');
+    d.className = 'item'; d.style.borderLeftColor = g.color;
+    d.innerHTML =
+      '<div class="hd">'+
+        '<input type="text" class="nm" value="'+g.name.replace(/"/g,'&quot;')+'" data-p="name" style="border:0;background:transparent;font-weight:600;font-size:13px;padding:2px 0;color:inherit">'+
+        '<button class="x" data-del="1">✕</button>'+
+      '</div>'+
+      '<div class="meta">'+g.qty+' đèn × '+g.ch+' kênh = '+(g.qty*g.ch)+' kênh sử dụng</div>'+
+      '<div class="addr">'+fmtAddr(L)+'</div>'+
+      (L.startUniverse!==L.endUniverse ? '<div class="span-warn">⚠ trải sang '+(L.endUniverse-L.startUniverse+1)+' Universe</div>' : '')+
+      '<label class="chk" style="margin-top:6px"><input type="checkbox" data-p="forceNew" '+(g.forceNew?'checked':'')+'> Universe mới</label>'+
+      '<label class="chk"><input type="checkbox" data-p="manual" '+(g.manual?'checked':'')+'> Địa chỉ thủ công</label>';
+    d.querySelector('[data-del]').onclick = ()=>delGroup(g.id);
+    d.querySelector('[data-p=name]').onchange = e=>setProp(g.id,'name',e.target.value);
+    d.querySelector('[data-p=forceNew]').onchange = e=>setProp(g.id,'forceNew',e.target.checked);
+    d.querySelector('[data-p=manual]').onchange = e=>setProp(g.id,'manual',e.target.checked);
+    list.appendChild(d);
+  });
+}
+
+function renderLegend(layout){
+  const L = $('legend');
+  if(!layout.length){ L.innerHTML = '<div class="empty">Chưa có nhóm đèn nào — thêm nhóm ở bên trái để xem bản đồ kênh.</div>'; return; }
+  L.innerHTML = '';
+  layout.forEach(item=>{
+    const row = document.createElement('div');
+    row.className = 'row-l';
+    row.innerHTML = '<span class="sw" style="background:'+item.group.color+'"></span>'+
+      item.group.name+' ('+fmtAddr(item)+')';
+    L.appendChild(row);
+  });
+}
+
+function renderUniverses(layout){
+  const wrap = $('universes');
+  wrap.innerHTML = '';
+  if(!layout.length) return;
+  let maxU = 1;
+  layout.forEach(L=> maxU = Math.max(maxU, L.endUniverse));
+
+  // map channel -> {color, title} per universe
+  for(let u=1; u<=maxU; u++){
+    const occ = new Array(UNIVERSE_SIZE+1).fill(null);
+    layout.forEach(L=>{
+      L.fixtures.forEach(f=>{
+        if(f.universe !== u) return;
+        for(let c=f.startCh; c<=f.endCh; c++){
+          occ[c] = { color:L.group.color, title:L.group.name+' — Đèn #'+f.index+' (kênh '+f.startCh+'–'+f.endCh+')' };
+        }
+      });
+    });
+    const used = occ.slice(1).filter(Boolean).length;
+
+    const card = document.createElement('div');
+    card.className = 'uCard';
+    const head = document.createElement('div');
+    head.className = 'uHead';
+    head.innerHTML = '<b>Universe '+u+'</b><span>'+used+' / '+UNIVERSE_SIZE+' kênh đã dùng</span>';
+    card.appendChild(head);
+
+    const grid = document.createElement('div');
+    grid.className = 'uGrid';
+    for(let c=1; c<=UNIVERSE_SIZE; c++){
+      const cell = document.createElement('div');
+      const o = occ[c];
+      cell.className = 'cell' + (o ? ' on' : '');
+      if(o){ cell.style.background = o.color; cell.title = 'Kênh '+c+' — '+o.title; }
+      else cell.title = 'Kênh '+c+' — trống';
+      grid.appendChild(cell);
+    }
+    card.appendChild(grid);
+    wrap.appendChild(card);
+  }
+}
+
+function renderAll(){
+  const layout = computeLayout();
+  renderStats(layout);
+  renderList(layout);
+  renderLegend(layout);
+  renderUniverses(layout);
+}
+
+/* ---------- xuất patch list ---------- */
+function exportPatch(){
+  if(!groups.length){ alert('Hãy thêm ít nhất một nhóm đèn trước khi xuất.'); return; }
+  const layout = computeLayout();
+  let out = 'DANH SÁCH PATCH DMX\n';
+  out += '===================================\n\n';
+  layout.forEach(L=>{
+    out += 'NHÓM: '+L.group.name+'  ('+L.group.qty+' đèn × '+L.group.ch+' kênh)\n';
+    L.fixtures.forEach(f=>{
+      out += '  Đèn '+String(f.index).padStart(2,'0')+'   Universe '+f.universe+'   Kênh '+f.startCh+'-'+f.endCh+'\n';
+    });
+    out += '\n';
+  });
+  let totalFixtures=0, totalChannels=0, maxU=0;
+  layout.forEach(L=>{ totalFixtures+=L.group.qty; totalChannels+=L.group.qty*L.group.ch; maxU=Math.max(maxU,L.endUniverse); });
+  out += '===================================\n';
+  out += 'TỔNG: '+totalFixtures+' đèn · '+totalChannels+' kênh sử dụng · '+maxU+' Universe\n';
+
+  const blob = new Blob([out], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.download = 'dmx_patch_list.txt';
+  a.href = URL.createObjectURL(blob);
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ---------- theme toggle (sáng/tối) ---------- */
+function effectiveTheme(){
+  const explicit = document.documentElement.getAttribute('data-theme');
+  if(explicit === 'light' || explicit === 'dark') return explicit;
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+}
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  try{ localStorage.setItem('avltools-theme', t); }catch(e){}
+}
+$('theme-toggle').onclick = ()=> applyTheme(effectiveTheme()==='dark' ? 'light' : 'dark');
+
+/* ---------- wiring ---------- */
+$('btn-add').onclick = addGroup;
+$('btn-export').onclick = exportPatch;
+$('btn-clear').onclick = ()=>{
+  if(groups.length && confirm('Xóa toàn bộ nhóm đèn hiện tại?')){ groups=[]; seq=0; renderAll(); }
+};
+
+renderAll();
+</script>
+</body>
+</html>

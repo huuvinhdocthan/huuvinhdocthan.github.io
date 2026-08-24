@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LED Slice Mapper — Zinh Doan AVL Tools</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-label%3D%22Slice%20LED%20logo%22%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23ef4444%22/%3E%3Crect%20x%3D%2217%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%2310b981%22/%3E%3Crect%20x%3D%221%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%233b82f6%22/%3E%3Crect%20x%3D%2217%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23f59e0b%22/%3E%3C/svg%3E">
+<script>
+/* Áp theme đã lưu (nếu có) trước khi CSS vẽ ra, tránh nháy sai theme.
+   Chưa chọn gì thì mặc định theo theme sáng/tối của hệ điều hành. */
+try{
+  var _t = localStorage.getItem('avltools-theme');
+  if(_t === 'light' || _t === 'dark') document.documentElement.setAttribute('data-theme', _t);
+}catch(e){}
+</script>
+<style>
+:root{
+  --bg:#f2f4f8; --panel:#ffffff; --panel2:#f7f9fc; --line:#dde2ea;
+  --txt:#141922; --dim:#5d6675; --dim2:#8d97a6;
+  --accent:#0e7c66; --amber:#b45309; --red:#dc2626;
+  --stage:#0b0c10; --stage-dot:#242832;
+  --chip-bg:#eaf3f0; --chip-border:#cfe3dc;
+  --hover-bg:#eef1f6; --hover-border:#c8d0dc;
+  --danger-bg:#fef2f2; --danger-border:#f6cfcf;
+  --danger-hover-bg:#fde3e3; --danger-hover-border:#eeb4b4;
+  --warn-bg:#fdf6e7; --warn-border:#f0dcb0; --warn-txt:#8a5a08;
+  --shadow:0 1px 2px rgba(20,25,34,.05), 0 8px 24px -12px rgba(20,25,34,.18);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e0e11; --panel:#17171c; --panel2:#1d1d23; --line:#2b2b33;
+    --txt:#ececed; --dim:#9498a3; --dim2:#6b6e78;
+    --accent:#2dd4bf; --amber:#f59e0b; --red:#ef4444;
+    --chip-bg:#0f2b25; --chip-border:#1c4a3d;
+    --hover-bg:#22232b; --hover-border:#3a3b45;
+    --danger-bg:#3a1414; --danger-border:#5c2323;
+    --danger-hover-bg:#4a1a1a; --danger-hover-border:#6e2b2b;
+    --warn-bg:#3a2e0f; --warn-border:#5c4a1a; --warn-txt:#f0c674;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e0e11; --panel:#17171c; --panel2:#1d1d23; --line:#2b2b33;
+  --txt:#ececed; --dim:#9498a3; --dim2:#6b6e78;
+  --accent:#2dd4bf; --amber:#f59e0b; --red:#ef4444;
+  --chip-bg:#0f2b25; --chip-border:#1c4a3d;
+  --hover-bg:#22232b; --hover-border:#3a3b45;
+  --danger-bg:#3a1414; --danger-border:#5c2323;
+  --danger-hover-bg:#4a1a1a; --danger-hover-border:#6e2b2b;
+  --warn-bg:#3a2e0f; --warn-border:#5c4a1a; --warn-txt:#f0c674;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--txt); padding:18px;
+  font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; font-size:14px;
+}
+.topbar{max-width:1800px;margin:0 auto 18px;display:flex;align-items:center;gap:12px;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:var(--shadow)}
+.topbar .logo{width:34px;height:34px;flex:0 0 auto;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px rgba(20,25,34,.15)}
+.topbar .logo svg{display:block;width:100%;height:100%}
+.topbar .brand-name{font-size:15px;font-weight:700;letter-spacing:.01em;line-height:1.2}
+.topbar .brand-sub{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.topbar .brand-link{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.topbar .right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.topbar .home{font-size:12px;color:var(--dim);text-decoration:none;
+  border:1px solid var(--line);border-radius:8px;padding:6px 12px;white-space:nowrap}
+.topbar .home:hover{background:var(--panel2);color:var(--txt);border-color:var(--dim2)}
+.theme-toggle{display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;flex:0 0 auto;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--dim);cursor:pointer}
+.theme-toggle:hover{color:var(--txt);border-color:var(--dim2);background:var(--hover-bg)}
+.theme-toggle svg{width:16px;height:16px}
+.theme-toggle .i-sun{display:block}
+.theme-toggle .i-moon{display:none}
+:root[data-theme="dark"] .theme-toggle .i-sun{display:none}
+:root[data-theme="dark"] .theme-toggle .i-moon{display:block}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .theme-toggle .i-sun{display:none}
+  :root:not([data-theme="light"]) .theme-toggle .i-moon{display:block}
+}
+.wrap{max-width:1800px;margin:0 auto;display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+h1{font-size:18px;color:var(--accent);margin-bottom:2px}
+.sub{font-size:11px;color:var(--dim)}
+h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+button{font-family:inherit;font-size:13px;border-radius:8px;cursor:pointer;border:1px solid var(--line);
+  background:var(--panel);color:var(--txt);padding:8px 12px;transition:.15s;box-shadow:0 1px 1px rgba(20,25,34,.04)}
+button:hover{background:var(--hover-bg);border-color:var(--hover-border)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;width:100%;padding:10px}
+button.primary:hover{filter:brightness(.9)}
+button.danger{background:var(--danger-bg);border-color:var(--danger-border);color:var(--red)}
+button.danger:hover{background:var(--danger-hover-bg);border-color:var(--danger-hover-border)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label.f{display:block;font-size:10px;color:var(--dim2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+input[type=number],input[type=text],select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:6px;
+  color:var(--txt);padding:6px 8px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+select{cursor:pointer}
+input:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,124,102,.14)}
+.chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);cursor:pointer;user-select:none}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center}
+.stat .k{display:block;font-size:9px;color:var(--dim2);text-transform:uppercase;letter-spacing:.06em}
+.stat .v{font-family:ui-monospace,Consolas,monospace;font-size:20px;font-weight:700;color:var(--amber)}
+.note{font-size:11px;color:var(--dim2);line-height:1.5;margin-top:8px}
+#list{display:flex;flex-direction:column;gap:10px;max-height:46vh;overflow-y:auto;padding-right:4px}
+.item{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:10px}
+.item .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.item .hd input[type=text]{border:0;border-bottom:1px solid transparent;background:transparent;font-weight:600;font-family:inherit;padding:2px 0;min-width:0}
+.item .hd input[type=text]:hover{border-bottom-color:var(--dim2)}
+.item .hd input[type=color]{-webkit-appearance:none;appearance:none;width:26px;height:26px;flex:0 0 auto;
+  border:1px solid var(--line);border-radius:7px;padding:0;background:none;cursor:pointer}
+.item .hd input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+.item .hd input[type=color]::-webkit-color-swatch{border:0;border-radius:4px}
+.item .hd input[type=color]::-moz-color-swatch{border:0;border-radius:4px}
+.item .hd{gap:8px}
+.x{background:transparent;border:0;color:var(--dim2);font-size:12px;padding:2px 4px}
+.x:hover{color:var(--red);background:transparent}
+.x:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.row4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.poly-tools{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+button.mini{width:100%;padding:6px 4px;font-size:11px;border-radius:6px}
+button.mini.pick{grid-column:1/-1}
+button.mini.pick.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.px{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--accent);margin-top:8px;
+  background:var(--chip-bg);border:1px solid var(--chip-border);border-radius:6px;padding:6px 8px;text-align:center;font-weight:500}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:12px;
+  color:var(--dim);margin-bottom:14px;box-shadow:var(--shadow)}
+#viewport{background:var(--stage);border:1px solid var(--line);border-radius:12px;padding:20px;
+  min-height:60vh;display:flex;align-items:flex-start;justify-content:center;overflow:auto;
+  background-image:radial-gradient(var(--stage-dot) 1px,transparent 1px);background-size:16px 16px;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.5)}
+#stage{position:relative}
+#comp{position:absolute;top:0;left:0;transform-origin:top left;background:#000;
+  outline:2px dashed #565d6b;outline-offset:0}
+.slice{position:absolute;cursor:grab;touch-action:none;
+  display:flex;align-items:center;justify-content:center}
+.slice:active{cursor:grabbing}
+.slice.dragging{z-index:5;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45))}
+.slice.dragging .slice-fill{outline:2px solid #fff;outline-offset:-2px}
+.slice.picking{cursor:default}
+.slice-fill{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.slice-outline{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.slice.picking .slice-outline{filter:drop-shadow(0 0 3px #fff)}
+#comp.picking{cursor:crosshair}
+.tag{pointer-events:none;position:relative;z-index:1}
+.tag{transform-origin:center center;padding:5px 9px;background:rgba(0,0,0,.72);
+  font-family:ui-monospace,Consolas,monospace;line-height:1.35;white-space:nowrap;border-radius:6px;
+  border:1px solid rgba(255,255,255,.18);max-width:calc(100% - 16px);overflow:hidden;text-overflow:ellipsis;
+  text-align:center;box-sizing:border-box}
+.tag b{display:block;font-size:11px;overflow:hidden;text-overflow:ellipsis}
+.tag span{display:block;font-size:10px;color:#c7c7d1;font-weight:400}
+.warn{background:var(--warn-bg);border:1px solid var(--warn-border);color:var(--warn-txt);
+  border-radius:8px;padding:8px 10px;font-size:11px;line-height:1.5;margin-top:10px}
+.empty{color:var(--dim2);font-size:12px;text-align:center;padding:24px 0}
+.credit{max-width:1800px;margin:18px auto 4px;text-align:center;font-size:11px;color:var(--dim2);
+  padding-top:14px;border-top:1px solid var(--line)}
+.credit b{color:var(--dim)}
+.credit a{color:var(--accent);text-decoration:none}
+.credit a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand-link" href="index.html">
+    <div class="logo"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Slice LED logo"><rect x="1" y="1" width="14" height="14" rx="3" fill="#ef4444"/><rect x="17" y="1" width="14" height="14" rx="3" fill="#10b981"/><rect x="1" y="17" width="14" height="14" rx="3" fill="#3b82f6"/><rect x="17" y="17" width="14" height="14" rx="3" fill="#f59e0b"/></svg></div>
+    <div>
+      <div class="brand-name">Zinh Doan ~ AVL ~ Sound and Event Tool</div>
+      <div class="brand-sub">LED Slice Mapper — Resolume Composition Tool</div>
+    </div>
+  </a>
+  <div class="right">
+    <button type="button" class="theme-toggle" id="theme-toggle" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng/tối">
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 1 0 20.354 15.354Z"/></svg>
+    </button>
+    <a class="home" href="index.html">&larr; Trang tổng</a>
+  </div>
+</header>
+<div class="wrap">
+
+  <!-- ================= PANEL ================= -->
+  <div class="card">
+    <h1>LED Slice Mapper</h1>
+    <p class="sub">Tính Composition Resolume tự động từ sơ đồ tấm LED</p>
+
+    <hr>
+
+    <h2>Thêm slice theo module LED</h2>
+    <div class="row" style="margin-bottom:8px">
+      <div><label class="f">Module W (px)</label><input type="number" id="mw" value="128" min="1"></div>
+      <div><label class="f">Module H (px)</label><input type="number" id="mh" value="128" min="1"></div>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <div><label class="f">Số cột</label><input type="number" id="mc" value="6" min="1"></div>
+      <div><label class="f">Số hàng</label><input type="number" id="mr" value="4" min="1"></div>
+    </div>
+    <div class="px" id="preview-px">768 × 512 px</div>
+    <div class="note" style="margin-bottom:10px">
+      Ví dụ: tấm LED module 128×128 px, ghép 6 cột × 4 hàng → 768 × 512 px.
+      Cần nhập pixel trực tiếp thì cứ đặt module = 1×1 rồi gõ số cột/hàng bằng số pixel.
+    </div>
+    <button class="primary" id="btn-add">+ Thêm Slice LED</button>
+
+    <hr>
+
+    <h2>Cấu hình Resolume đề xuất</h2>
+    <div class="row">
+      <div class="stat"><span class="k">Width (ngang)</span><span class="v" id="cw">0</span></div>
+      <div class="stat"><span class="k">Height (dọc)</span><span class="v" id="ch">0</span></div>
+    </div>
+    <div class="g3" style="margin-top:8px">
+      <div class="stat"><span class="k">Pixel LED</span><span class="v" id="s-px" style="font-size:13px;color:var(--accent)">0</span></div>
+      <div class="stat"><span class="k">Pixel Comp</span><span class="v" id="s-area" style="font-size:13px;color:var(--txt)">0</span></div>
+      <div class="stat"><span class="k">Hiệu suất</span><span class="v" id="s-eff" style="font-size:13px;color:var(--txt)">–</span></div>
+    </div>
+    <p class="note">Width/Height là khung nhỏ nhất bao trọn mọi slice. Hiệu suất = pixel LED thật / pixel composition — càng gần 100% thì càng ít vùng đen thừa phải truyền.</p>
+    <div id="warn"></div>
+
+    <hr>
+
+    <div class="row">
+      <button id="btn-png">Xuất ảnh PNG 1:1</button>
+      <button class="danger" id="btn-clear">Xóa tất cả</button>
+    </div>
+
+    <hr>
+
+    <h2>Danh sách slice (<span id="cnt">0</span>)</h2>
+    <div id="list"><div class="empty">Chưa có slice nào.</div></div>
+  </div>
+
+  <!-- ================= CANVAS ================= -->
+  <div>
+    <div class="bar">
+      <div>Xem trước — tỉ lệ <b id="zoom" style="color:var(--accent)">100%</b> · vùng đen viền đứt = Composition · kéo slice để di chuyển</div>
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <label class="chk"><input type="checkbox" id="t-pattern" checked> Caro theo màu slice</label>
+        <label class="chk"><input type="checkbox" id="t-label" checked> Hiện nhãn</label>
+      </div>
+    </div>
+    <div id="viewport"><div id="stage"><div id="comp"></div></div></div>
+  </div>
+
+</div>
+
+<footer class="credit">
+  Công cụ được thực hiện bởi <b>Zinh Doan</b> · Freelancer AVL &nbsp;|&nbsp;
+  Gmail: <a href="mailto:Huuvinhit98@gmail.com">Huuvinhit98@gmail.com</a> &nbsp;|&nbsp;
+  SĐT: <a href="tel:0986416678">0986 416 678</a>
+  <div style="margin-top:6px;font-size:10px">© 2026 Zinh Doan. Bảo lưu mọi quyền — nghiêm cấm sao chép, phân phối lại hoặc sử dụng lại mã nguồn khi chưa có sự đồng ý bằng văn bản.</div>
+</footer>
+
+<script>
+"use strict";
+const COLORS = ['#ef4444','#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899','#14b8a6','#f97316'];
+let slices = [], seq = 0, scale = 1;
+let picking = null;     // {id: sliceId} khi đang ở chế độ bấm chọn điểm trên khung
+let justDragged = false; // chặn 1 click "ma" ngay sau khi vừa kéo thả xong
+
+function regularPolyPoints(n, startDeg){
+  const pts = [], cx=0.5, cy=0.5, r=0.46;
+  for(let i=0;i<n;i++){
+    const a = (startDeg + i*360/n) * Math.PI/180;
+    pts.push({ x:+(cx+r*Math.cos(a)).toFixed(4), y:+(cy+r*Math.sin(a)).toFixed(4) });
+  }
+  return pts;
+}
+const SHAPE_PRESETS = {
+  'triangle-up': ()=> [{x:0.5,y:0.03},{x:0.97,y:0.97},{x:0.03,y:0.97}],
+  'diamond':     ()=> regularPolyPoints(4, -90),
+  'pentagon':    ()=> regularPolyPoints(5, -90),
+  'hexagon':     ()=> regularPolyPoints(6, -90)
+};
+function shade(hex, pct){ // pct>0 lightens toward white, pct<0 darkens toward black
+  const n = parseInt(hex.slice(1), 16);
+  let r = (n>>16)&255, g = (n>>8)&255, b = n&255;
+  const t = pct < 0 ? 0 : 255, p = Math.abs(pct);
+  r = Math.round((t-r)*p + r); g = Math.round((t-g)*p + g); b = Math.round((t-b)*p + b);
+  return '#' + [r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+function checkerTones(hex){ return [shade(hex,0.42), shade(hex,-0.32)]; }
+
+const $ = id => document.getElementById(id);
+const num = v => { const n = parseInt(v,10); return isNaN(n) ? 0 : n; };
+const fmt = n => n.toLocaleString('en-US');
+
+/* ---------- form module ---------- */
+function refreshFormPreview(){
+  const w = num($('mw').value) * num($('mc').value);
+  const h = num($('mh').value) * num($('mr').value);
+  $('preview-px').textContent = fmt(w) + ' × ' + fmt(h) + ' px';
+}
+['mw','mh','mc','mr'].forEach(id => $(id).addEventListener('input', refreshFormPreview));
+
+function addSlice(){
+  const mw = num($('mw').value), mh = num($('mh').value);
+  const c  = num($('mc').value),  r  = num($('mr').value);
+  if(mw<1||mh<1||c<1||r<1){ alert('Module và số cột/hàng phải lớn hơn 0.'); return; }
+  seq++;
+  // đặt slice mới nối tiếp bên phải slice cuối để không đè lên nhau
+  let x = 0;
+  slices.forEach(s => { x = Math.max(x, s.x + s.mw*s.cols); });
+  slices.push({ id:seq, name:'LED '+seq, x:x, y:0, mw:mw, mh:mh, cols:c, rows:r,
+                color:COLORS[(seq-1)%COLORS.length], rot:0, shape:'rect' });
+  renderAll();
+}
+
+function W(s){ return s.mw * s.cols; }
+function H(s){ return s.mh * s.rows; }
+
+function setProp(id, prop, val){
+  const s = slices.find(o=>o.id===id); if(!s) return;
+  if(prop==='name') s.name = val;
+  else if(prop==='color'){ s.color = val; }
+  else if(prop==='shape'){ s.shape = val; }
+  else {
+    let n = num(val);
+    if(prop!=='x' && prop!=='y' && prop!=='rot' && n<1) n = 1;
+    s[prop] = n;
+  }
+  renderAll(prop==='name' || prop==='color');
+}
+function delSlice(id){ slices = slices.filter(s=>s.id!==id); renderAll(); }
+
+/* ---------- composition ---------- */
+function compSize(){
+  let w=0,h=0;
+  slices.forEach(s=>{ w=Math.max(w,s.x+W(s)); h=Math.max(h,s.y+H(s)); });
+  return {w:Math.max(w,0), h:Math.max(h,0)};
+}
+function overlaps(){
+  const out=[];
+  for(let i=0;i<slices.length;i++) for(let j=i+1;j<slices.length;j++){
+    const a=slices[i], b=slices[j];
+    if(a.x < b.x+W(b) && b.x < a.x+W(a) && a.y < b.y+H(b) && b.y < a.y+H(a))
+      out.push(a.name+' ↔ '+b.name);
+  }
+  return out;
+}
+
+/* ---------- render ---------- */
+function renderStats(){
+  const c = compSize();
+  $('cw').textContent = fmt(c.w);
+  $('ch').textContent = fmt(c.h);
+  let led = 0; slices.forEach(s=> led += W(s)*H(s));
+  const area = c.w*c.h;
+  $('s-px').textContent   = led  ? fmt(led)  : '0';
+  $('s-area').textContent = area ? fmt(area) : '0';
+  $('s-eff').textContent  = area ? Math.round(led/area*100)+'%' : '–';
+
+  const ov = overlaps();
+  $('warn').innerHTML = ov.length
+    ? '<div class="warn"><b>⚠ Slice đang chồng lên nhau:</b><br>' + ov.join('<br>') +
+      '<br>Trên Resolume mỗi slice cần một vùng riêng — chỉnh lại X/Y để tách ra.</div>'
+    : '';
+}
+
+function renderList(){
+  $('cnt').textContent = slices.length;
+  const L = $('list');
+  if(!slices.length){ L.innerHTML = '<div class="empty">Chưa có slice nào.</div>'; return; }
+  L.innerHTML = '';
+  slices.forEach(s=>{
+    const d = document.createElement('div');
+    d.className = 'item'; d.style.borderLeftColor = s.color;
+    d.innerHTML =
+      '<div class="hd">'+
+        '<input type="color" value="'+s.color+'" data-p="color" title="Đổi màu slice">'+
+        '<input type="text" value="'+s.name.replace(/"/g,'&quot;')+'" data-p="name">'+
+        '<button class="x" data-del="1">✕</button>'+
+      '</div>'+
+      '<div class="g4">'+
+        '<div><label class="f">Mod W</label><input type="number" value="'+s.mw+'"   data-p="mw"></div>'+
+        '<div><label class="f">Mod H</label><input type="number" value="'+s.mh+'"   data-p="mh"></div>'+
+        '<div><label class="f">Cột</label><input type="number" value="'+s.cols+'" data-p="cols"></div>'+
+        '<div><label class="f">Hàng</label><input type="number" value="'+s.rows+'" data-p="rows"></div>'+
+      '</div>'+
+      '<div class="row" style="margin-top:6px">'+
+        '<div><label class="f">Vị trí X</label><input type="number" value="'+s.x+'" data-p="x"></div>'+
+        '<div><label class="f">Vị trí Y</label><input type="number" value="'+s.y+'" data-p="y"></div>'+
+      '</div>'+
+      '<div class="row" style="margin-top:6px">'+
+        '<div><label class="f">Xoay (°)</label><input type="number" value="'+(s.rot||0)+'" step="1" data-p="rot"></div>'+
+        '<div><label class="f">Hình dạng</label><select data-p="shape">'+
+          '<option value="rect"'+(s.shape!=='circle'&&s.shape!=='poly'?' selected':'')+'>Chữ nhật</option>'+
+          '<option value="circle"'+(s.shape==='circle'?' selected':'')+'>Hình tròn (cắt)</option>'+
+          '<option value="poly"'+(s.shape==='poly'?' selected':'')+'>Đa giác tùy chỉnh (tự cắt)</option>'+
+        '</select></div>'+
+      '</div>'+
+      (s.shape==='poly' ?
+        '<div class="poly-tools">'+
+          '<div class="row4">'+
+            '<button type="button" class="mini" data-preset="triangle-up">▲ Tam giác</button>'+
+            '<button type="button" class="mini" data-preset="diamond">◆ Thoi</button>'+
+            '<button type="button" class="mini" data-preset="pentagon">⬠ Ngũ giác</button>'+
+            '<button type="button" class="mini" data-preset="hexagon">⬡ Lục giác</button>'+
+          '</div>'+
+          '<div class="row2" style="margin-top:6px">'+
+            '<button type="button" class="mini pick'+(picking&&picking.id===s.id?' on':'')+'" data-pick="1">'+
+              (picking&&picking.id===s.id ? '■ Đang vẽ — bấm để dừng' : '✏ Bấm chọn điểm trên khung') +
+            '</button>'+
+            '<button type="button" class="mini" data-undo="1">↩ Hoàn tác điểm</button>'+
+          '</div>'+
+          '<div class="note" style="margin-top:4px">'+((s.points||[]).length)+' điểm · chọn mẫu có sẵn rồi bấm "Bấm chọn điểm trên khung" để kéo/thêm điểm chỉnh lại cho đúng hình thật (tối thiểu 3 điểm).</div>'+
+        '</div>' : '') +
+      '<div class="px">'+fmt(W(s))+' × '+fmt(H(s))+' px  ·  '+(s.cols*s.rows)+' tấm</div>'+
+      '<div class="note" style="margin-top:6px">Xoay/cắt chỉ để mô phỏng cách lắp thật ngoài hiện trường — Resolume vẫn nhận nội dung theo đúng '+fmt(W(s))+' × '+fmt(H(s))+' px như trên.</div>';
+    d.querySelector('[data-del]').onclick = ()=>delSlice(s.id);
+    d.querySelectorAll('[data-p]').forEach(inp=>{
+      if(inp.dataset.p === 'color'){
+        inp.oninput = ()=>{
+          s.color = inp.value;
+          d.style.borderLeftColor = inp.value;
+          renderCanvas();
+        };
+        inp.onchange = ()=> renderStats();
+      } else if(inp.dataset.p === 'shape'){
+        inp.onchange = ()=>{
+          s.shape = inp.value;
+          if(s.shape==='poly' && (!s.points || s.points.length<3)) s.points = SHAPE_PRESETS['triangle-up']();
+          if(s.shape!=='poly' && picking && picking.id===s.id) picking = null;
+          renderAll();
+        };
+      } else if(inp.tagName === 'SELECT'){
+        inp.onchange = ()=> setProp(s.id, inp.dataset.p, inp.value);
+      } else {
+        inp.oninput = ()=> setProp(s.id, inp.dataset.p, inp.value);
+      }
+    });
+    const presetBtn = d.querySelector('[data-preset]');
+    if(presetBtn) d.querySelectorAll('[data-preset]').forEach(btn=>{
+      btn.onclick = ()=>{ s.shape='poly'; s.points = SHAPE_PRESETS[btn.dataset.preset](); renderAll(); };
+    });
+    const pickBtn = d.querySelector('[data-pick]');
+    if(pickBtn) pickBtn.onclick = ()=>{
+      if(picking && picking.id === s.id){ picking = null; }
+      else {
+        if(!s.points || s.points.length<3) s.points = SHAPE_PRESETS['triangle-up']();
+        picking = { id: s.id };
+      }
+      renderAll();
+    };
+    const undoBtn = d.querySelector('[data-undo]');
+    if(undoBtn) undoBtn.onclick = ()=>{
+      if(s.points && s.points.length>3){ s.points.pop(); renderAll(); }
+    };
+    L.appendChild(d);
+  });
+}
+
+function layoutStage(){
+  const c = compSize();
+  const comp = $('comp'), stage = $('stage'), vp = $('viewport');
+  const cw = c.w || 1920, chh = c.h || 1080;
+  const avail = Math.max(vp.clientWidth - 44, 240);
+  const availH = Math.max(vp.clientHeight - 44, 240);
+  scale = Math.min(avail/cw, availH/chh, 1);
+  $('zoom').textContent = Math.round(scale*100)+'%';
+
+  comp.style.width  = cw + 'px';
+  comp.style.height = chh + 'px';
+  comp.style.transform = 'scale('+scale+')';
+  stage.style.width  = (cw*scale)  + 'px';
+  stage.style.height = (chh*scale) + 'px';
+}
+
+const SVGNS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs){
+  const e = document.createElementNS(SVGNS, tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+function renderCanvas(){
+  layoutStage();
+  const comp = $('comp');
+  const pat = $('t-pattern').checked, lab = $('t-label').checked;
+  comp.innerHTML = '';
+  slices.forEach(s=>{
+    const w = W(s), h = H(s);
+    const isPicking = !!(picking && picking.id === s.id);
+    const el = document.createElement('div');
+    el.className = 'slice' + (isPicking ? ' picking' : '');
+    el.style.left = s.x+'px'; el.style.top = s.y+'px';
+    el.style.width = w+'px'; el.style.height = h+'px';
+    el.style.transform = 'rotate('+(s.rot||0)+'deg)';
+
+    // lớp tô màu / caro, bị cắt theo hình dạng đã chọn
+    const fill = document.createElement('div');
+    fill.className = 'slice-fill';
+    fill.style.background = s.color+'2e';
+    if(pat){
+      const [t1,t2] = checkerTones(s.color);
+      fill.style.backgroundImage =
+        'conic-gradient('+t1+' 90deg, '+t2+' 90deg 180deg, '+t1+' 180deg 270deg, '+t2+' 270deg)';
+      fill.style.backgroundSize = '64px 64px';
+    }
+    if(s.shape === 'circle'){
+      fill.style.borderRadius = '50%';
+    } else if(s.shape === 'poly' && s.points && s.points.length >= 3){
+      fill.style.clipPath = 'polygon(' + s.points.map(pt=>(pt.x*100).toFixed(2)+'% '+(pt.y*100).toFixed(2)+'%').join(',') + ')';
+    }
+    el.appendChild(fill);
+
+    if(lab){
+      const t = document.createElement('div');
+      t.className = 'tag';
+      const tagScale = Math.min(1/scale, 3); // không phóng quá to khiến nhãn tràn ra ngoài khung slice nhỏ
+      t.style.transform = 'scale('+tagScale+')';
+      t.innerHTML = '<b style="color:'+s.color+'">'+s.name+'</b>'+
+        '<span>'+fmt(w)+' × '+fmt(h)+'</span>'+
+        '<span class="pos">X:'+s.x+'  Y:'+s.y+'</span>';
+      el.appendChild(t);
+    }
+
+    // đường viền vẽ đúng theo hình dạng thật (không bị bo méo như border CSS thường)
+    const svg = svgEl('svg', {class:'slice-outline', viewBox:'0 0 '+w+' '+h, preserveAspectRatio:'none'});
+    if(s.shape === 'circle'){
+      svg.appendChild(svgEl('ellipse', {cx:w/2, cy:h/2, rx:Math.max(0,w/2-2), ry:Math.max(0,h/2-2),
+        fill:'none', stroke:s.color, 'stroke-width':3}));
+    } else if(s.shape === 'poly'){
+      const pts = s.points || [];
+      if(pts.length >= 2){
+        svg.appendChild(svgEl(pts.length>=3 ? 'polygon':'polyline', {
+          points: pts.map(pt=>(pt.x*w)+','+(pt.y*h)).join(' '),
+          fill:'none', stroke:s.color, 'stroke-width':3, 'vector-effect':'non-scaling-stroke'
+        }));
+      }
+      pts.forEach(pt=>{
+        svg.appendChild(svgEl('circle', {cx:pt.x*w, cy:pt.y*h, r: isPicking?7:3.5,
+          fill:'#fff', stroke:s.color, 'stroke-width':2}));
+      });
+    } else {
+      svg.appendChild(svgEl('rect', {x:2, y:2, width:Math.max(0,w-4), height:Math.max(0,h-4),
+        fill:'none', stroke:s.color, 'stroke-width':3}));
+    }
+    el.appendChild(svg);
+
+    el.addEventListener('pointerdown', ev => {
+      if(isPicking) return; // đang ở chế độ chọn điểm cho chính slice này -> để click rơi xuống canvas
+      startDrag(ev, s, el);
+    });
+    comp.appendChild(el);
+  });
+
+  comp.onclick = picking ? handlePick : null;
+  comp.classList.toggle('picking', !!picking);
+}
+
+function handlePick(e){
+  if(!picking || justDragged){ justDragged = false; return; }
+  const s = slices.find(o=>o.id===picking.id); if(!s) return;
+  const rect = $('comp').getBoundingClientRect();
+  const localX = (e.clientX - rect.left) / (scale || 1);
+  const localY = (e.clientY - rect.top)  / (scale || 1);
+  const w = W(s), h = H(s), cx = s.x+w/2, cy = s.y+h/2;
+  const rad = -(s.rot||0) * Math.PI/180;
+  const dx = localX-cx, dy = localY-cy;
+  const rx = dx*Math.cos(rad) - dy*Math.sin(rad);
+  const ry = dx*Math.sin(rad) + dy*Math.cos(rad);
+  const ux = cx+rx, uy = cy+ry;
+  let fx = (ux - s.x)/w, fy = (uy - s.y)/h;
+  if(fx < -0.08 || fx > 1.08 || fy < -0.08 || fy > 1.08) return; // click ngoài slice đang chỉnh -> bỏ qua
+  fx = Math.max(0, Math.min(1, fx)); fy = Math.max(0, Math.min(1, fy));
+  if(!s.points) s.points = [];
+  s.points.push({x:+fx.toFixed(4), y:+fy.toFixed(4)});
+  renderAll();
+}
+
+/* ---------- kéo thả slice ---------- */
+function snapPos(s, x, y){
+  const w = W(s), h = H(s), thr = 10;
+  let bx = x, by = y, bestDx = thr, bestDy = thr;
+  slices.forEach(o=>{
+    if(o.id === s.id) return;
+    const ow = W(o), oh = H(o);
+    [o.x, o.x+ow, o.x-w, o.x+ow-w].forEach(c=>{
+      const d = Math.abs(c-x); if(d < bestDx){ bestDx = d; bx = c; }
+    });
+    [o.y, o.y+oh, o.y-h, o.y+oh-h].forEach(c=>{
+      const d = Math.abs(c-y); if(d < bestDy){ bestDy = d; by = c; }
+    });
+  });
+  return { x: Math.max(0, bx), y: Math.max(0, by) };
+}
+
+function startDrag(ev, s, el){
+  if(ev.button !== undefined && ev.button !== 0) return;
+  ev.preventDefault();
+  ev.stopPropagation();
+  el.setPointerCapture(ev.pointerId);
+  el.classList.add('dragging');
+  const dragScale = scale || 1;
+  const startClientX = ev.clientX, startClientY = ev.clientY;
+  const origX = s.x, origY = s.y;
+
+  function onMove(e){
+    const dx = (e.clientX - startClientX) / dragScale;
+    const dy = (e.clientY - startClientY) / dragScale;
+    const raw = { x: Math.round(origX + dx), y: Math.round(origY + dy) };
+    const snapped = snapPos(s, Math.max(0, raw.x), Math.max(0, raw.y));
+    s.x = snapped.x; s.y = snapped.y;
+    el.style.left = s.x + 'px';
+    el.style.top  = s.y + 'px';
+    const posEl = el.querySelector('.tag .pos');
+    if(posEl) posEl.textContent = 'X:'+s.x+'  Y:'+s.y;
+    layoutStage();
+    renderStats();
+  }
+  function onUp(e){
+    el.releasePointerCapture(ev.pointerId);
+    el.classList.remove('dragging');
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    justDragged = true;
+    renderAll();
+  }
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
+}
+
+function renderAll(skipList){
+  renderStats();
+  if(!skipList) renderList();
+  renderCanvas();
+}
+
+/* ---------- export PNG 1:1 ---------- */
+function drawChecker(g,x,y,w,h,size,c1,c2){
+  for(let yy=0; yy<h; yy+=size){
+    for(let xx=0; xx<w; xx+=size){
+      const odd = ((Math.floor(xx/size)+Math.floor(yy/size))%2)!==0;
+      g.fillStyle = odd ? c2 : c1;
+      g.fillRect(x+xx, y+yy, Math.min(size,w-xx), Math.min(size,h-yy));
+    }
+  }
+}
+
+function exportPNG(){
+  if(!slices.length){ alert('Hãy thêm ít nhất một slice trước khi xuất ảnh.'); return; }
+  const c = compSize();
+  const cv = document.createElement('canvas');
+  cv.width = c.w; cv.height = c.h;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#000'; g.fillRect(0,0,c.w,c.h);
+  const pat = $('t-pattern').checked;
+
+  slices.forEach(s=>{
+    const w = W(s), h = H(s);
+    const cx = s.x + w/2, cy = s.y + h/2;
+    const rotRad = (s.rot||0) * Math.PI/180;
+    const isCircle = s.shape === 'circle';
+    const isPoly = s.shape === 'poly' && s.points && s.points.length >= 3;
+
+    g.save();
+    g.translate(cx, cy);
+    g.rotate(rotRad);
+    g.translate(-cx, -cy);
+
+    if(isCircle){
+      g.beginPath();
+      g.ellipse(cx, cy, w/2, h/2, 0, 0, Math.PI*2);
+      g.clip();
+    } else if(isPoly){
+      g.beginPath();
+      s.points.forEach((pt,i)=>{
+        const px = s.x+pt.x*w, py = s.y+pt.y*h;
+        if(i===0) g.moveTo(px,py); else g.lineTo(px,py);
+      });
+      g.closePath();
+      g.clip();
+    }
+
+    if(pat){ const [t1,t2] = checkerTones(s.color); drawChecker(g, s.x, s.y, w, h, 64, t1, t2); }
+    else { g.fillStyle = s.color+'33'; g.fillRect(s.x,s.y,w,h); }
+
+    // lưới module — soi lệch pixel trong Advanced Output
+    g.strokeStyle = s.color+'55'; g.lineWidth = 1;
+    g.beginPath();
+    for(let i=1;i<s.cols;i++){ g.moveTo(s.x+i*s.mw+.5, s.y); g.lineTo(s.x+i*s.mw+.5, s.y+h); }
+    for(let j=1;j<s.rows;j++){ g.moveTo(s.x, s.y+j*s.mh+.5); g.lineTo(s.x+w, s.y+j*s.mh+.5); }
+    g.stroke();
+
+    g.strokeStyle = s.color; g.lineWidth = 4;
+    if(isCircle){
+      g.beginPath();
+      g.ellipse(cx, cy, w/2-2, h/2-2, 0, 0, Math.PI*2);
+      g.stroke();
+    } else if(isPoly){
+      g.beginPath();
+      s.points.forEach((pt,i)=>{
+        const px = s.x+pt.x*w, py = s.y+pt.y*h;
+        if(i===0) g.moveTo(px,py); else g.lineTo(px,py);
+      });
+      g.closePath();
+      g.stroke();
+    } else {
+      g.strokeRect(s.x+2, s.y+2, w-4, h-4);
+    }
+
+    const fs = Math.max(14, Math.min(w/12, h/6, 64));
+    g.textAlign='center'; g.textBaseline='middle'; g.fillStyle='#fff';
+    g.font = 'bold '+fs+'px monospace';
+    g.fillText(s.name, s.x+w/2, s.y+h/2 - fs*0.7);
+    g.font = fs*0.7+'px monospace';
+    g.fillText(w+' × '+h, s.x+w/2, s.y+h/2 + fs*0.25);
+    g.fillStyle = '#b8b8c4'; g.font = fs*0.55+'px monospace';
+    g.fillText('X:'+s.x+'  Y:'+s.y, s.x+w/2, s.y+h/2 + fs*1.15);
+
+    g.restore();
+  });
+
+  const a = document.createElement('a');
+  a.download = 'resolume_comp_'+c.w+'x'+c.h+'.png';
+  a.href = cv.toDataURL('image/png');
+  a.click();
+}
+
+/* ---------- wiring ---------- */
+$('btn-add').onclick = addSlice;
+$('btn-png').onclick = exportPNG;
+$('btn-clear').onclick = ()=>{
+  if(slices.length && confirm('Xóa toàn bộ slice hiện tại?')){ slices=[]; seq=0; renderAll(); }
+};
+$('t-pattern').onchange = renderCanvas;
+$('t-label').onchange   = renderCanvas;
+window.addEventListener('resize', renderCanvas);
+
+/* ---------- theme toggle (sáng/tối) ---------- */
+function effectiveTheme(){
+  const explicit = document.documentElement.getAttribute('data-theme');
+  if(explicit === 'light' || explicit === 'dark') return explicit;
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+}
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  try{ localStorage.setItem('avltools-theme', t); }catch(e){}
+}
+$('theme-toggle').onclick = ()=> applyTheme(effectiveTheme()==='dark' ? 'light' : 'dark');
+
+refreshFormPreview();
+renderAll();
+</script>
+</body>
+</html>

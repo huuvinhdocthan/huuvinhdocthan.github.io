@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soundboard sự kiện — Zinh Doan AVL Tools</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-label%3D%22Slice%20LED%20logo%22%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23ef4444%22/%3E%3Crect%20x%3D%2217%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%2310b981%22/%3E%3Crect%20x%3D%221%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%233b82f6%22/%3E%3Crect%20x%3D%2217%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23f59e0b%22/%3E%3C/svg%3E">
+<script>
+/* Áp theme đã lưu (nếu có) trước khi CSS vẽ ra, tránh nháy sai theme.
+   Chưa chọn gì thì mặc định theo theme sáng/tối của hệ điều hành (mặc định gốc là sáng). */
+try{
+  var _t = localStorage.getItem('avltools-theme');
+  if(_t === 'light' || _t === 'dark') document.documentElement.setAttribute('data-theme', _t);
+}catch(e){}
+</script>
+<style>
+:root{
+  --bg:#f2f4f8; --panel:#ffffff; --panel2:#f7f9fc; --line:#dde2ea;
+  --txt:#141922; --dim:#5d6675; --dim2:#8d97a6;
+  --sky:#0284c7; --sky-dim:#e0f2fe; --sky-txt-on-dim:#075985;
+  --amber:#f59e0b; --amber-dim:#78350f;
+  --red:#ef4444; --red-dim:#7f1d1d;
+  --green:#22c55e;
+  --shadow:0 1px 2px rgba(20,25,34,.05), 0 8px 24px -12px rgba(20,25,34,.18);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e0e11; --panel:#17171c; --panel2:#1d1d23; --line:#2b2b33;
+    --txt:#ececed; --dim:#9498a3; --dim2:#6b6e78;
+    --sky:#38bdf8; --sky-dim:#0c4a6e; --sky-txt-on-dim:#bfeaff;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e0e11; --panel:#17171c; --panel2:#1d1d23; --line:#2b2b33;
+  --txt:#ececed; --dim:#9498a3; --dim2:#6b6e78;
+  --sky:#38bdf8; --sky-dim:#0c4a6e; --sky-txt-on-dim:#bfeaff;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--txt); padding:16px;
+  font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; font-size:14px;
+}
+button{font-family:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--txt);
+  border-radius:8px;transition:.12s}
+button:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+input[type=text]{font-family:inherit;background:var(--panel2);border:1px solid var(--line);border-radius:6px;
+  color:var(--txt);padding:5px 7px;font-size:12.5px}
+input[type=text]:focus{outline:0;border-color:var(--sky)}
+.wrap{max-width:1800px;margin:0 auto}
+
+/* ---------- header (đồng bộ thương hiệu chung của site) ---------- */
+.topbar{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);
+  border-radius:12px;padding:12px 18px;box-shadow:var(--shadow);margin-bottom:14px}
+.topbar .brand-link{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.topbar .logo{width:34px;height:34px;flex:0 0 auto;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.topbar .logo svg{display:block;width:100%;height:100%}
+.topbar .brand-name{font-size:15px;font-weight:700;letter-spacing:.01em;line-height:1.2;color:var(--txt)}
+.topbar .brand-sub{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.topbar .right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.topbar .home{font-size:12px;color:var(--dim);text-decoration:none;
+  border:1px solid var(--line);border-radius:8px;padding:6px 12px;white-space:nowrap}
+.topbar .home:hover{background:var(--panel2);color:var(--txt);border-color:var(--dim2)}
+.theme-toggle{display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;flex:0 0 auto;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--dim)}
+.theme-toggle:hover{color:var(--txt);border-color:var(--dim2)}
+.theme-toggle svg{width:16px;height:16px}
+.theme-toggle .i-sun{display:block}
+.theme-toggle .i-moon{display:none}
+:root[data-theme="dark"] .theme-toggle .i-sun{display:none}
+:root[data-theme="dark"] .theme-toggle .i-moon{display:block}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .theme-toggle .i-sun{display:none}
+  :root:not([data-theme="light"]) .theme-toggle .i-moon{display:block}
+}
+
+/* ---------- control strip: live indicator + fade/panic ---------- */
+.control-strip{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;
+  box-shadow:var(--shadow);margin-bottom:14px}
+.live{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;letter-spacing:.04em}
+.live .dot{width:9px;height:9px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:ping 1.6s ease-out infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}100%{box-shadow:0 0 0 9px rgba(34,197,94,0)}}
+.control-strip .spacer{flex:1}
+.btn-fade{background:var(--amber-dim);border-color:var(--amber);color:#fde3b0;font-weight:700;
+  padding:10px 18px;border-radius:10px;font-size:13px}
+.btn-fade:hover{background:var(--amber);color:#2a1a02}
+.btn-panic{background:var(--red);border-color:var(--red);color:#fff;font-weight:800;letter-spacing:.02em;
+  padding:10px 20px;border-radius:10px;font-size:13px;box-shadow:0 4px 14px -4px rgba(239,68,68,.6)}
+.btn-panic:hover{background:#dc2626}
+.btn-panic:active,.btn-fade:active{transform:scale(.97)}
+
+/* ---------- main layout ---------- */
+.board{display:grid;grid-template-columns:minmax(320px,42%) 1fr;gap:14px;align-items:start}
+@media(max-width:900px){.board{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+.panel-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:12px}
+.panel-hd h2{font-size:14px;display:flex;align-items:center;gap:8px}
+.panel-hd .icon{width:20px;height:20px}
+.toggle{font-size:10.5px;padding:5px 9px;border-radius:6px;color:var(--dim)}
+.toggle.on{background:var(--sky-dim);border-color:var(--sky);color:var(--sky-txt-on-dim)}
+
+/* ---------- playlist ---------- */
+.go-btn{width:100%;padding:20px;border-radius:12px;font-weight:900;font-size:19px;letter-spacing:.12em;
+  background:linear-gradient(180deg,#22c55e,#16a34a);color:#04220f;border:1px solid #16a34a;margin-bottom:12px}
+.go-btn:hover{filter:brightness(1.08)}
+.go-btn:active{transform:scale(.99)}
+.add-row{display:flex;gap:8px;margin-bottom:10px}
+.add-row button{flex:1;padding:8px;font-size:12.5px;border-style:dashed;color:var(--dim)}
+.add-row button:hover{color:var(--txt);border-color:var(--sky)}
+#trackList{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;margin-bottom:12px;
+  min-height:60px;border-radius:10px}
+#trackList.dragover{outline:2px dashed var(--sky);outline-offset:-2px}
+.track{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);
+  border-left:3px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer}
+.track:hover{border-color:var(--dim2)}
+.track.current{border-left-color:var(--sky)}
+.track.playing{background:var(--sky-dim);border-left-color:var(--sky)}
+.track .idx{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--dim2);width:18px;flex:0 0 auto}
+.track .name{flex:1;font-size:12.5px;background:transparent;border:0;color:inherit;min-width:0}
+.track .name:focus{outline:1px solid var(--sky);border-radius:4px}
+.track .state{font-size:10px;color:var(--dim2);font-family:ui-monospace,Consolas,monospace;flex:0 0 auto}
+.track.playing .state{color:var(--sky)}
+.track .mv{flex:0 0 auto;display:flex;gap:2px}
+.track .mv button{width:20px;height:20px;font-size:10px;padding:0;line-height:1;color:var(--dim2)}
+.track .mv button:hover{color:var(--txt)}
+.empty-hint{color:var(--dim2);font-size:12px;text-align:center;padding:24px 10px;border:1.5px dashed var(--line);
+  border-radius:8px}
+
+/* ---------- soundboard ---------- */
+.sfx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.pad{position:relative;aspect-ratio:1.15;border-radius:12px;border:1px solid var(--line);background:var(--panel2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;
+  padding:10px;overflow:hidden}
+.pad.empty{border-style:dashed;cursor:pointer;color:var(--dim2);font-size:11.5px;line-height:1.5}
+.pad.empty:hover{border-color:var(--amber);color:var(--dim)}
+.pad.dragover{outline:2px dashed var(--amber);outline-offset:-2px}
+.pad.loaded{cursor:pointer;border-color:var(--line)}
+.pad.loaded:hover{border-color:var(--amber)}
+.pad.active{background:var(--amber);border-color:var(--amber);animation:pulse 1s ease-in-out infinite alternate}
+@keyframes pulse{from{filter:brightness(1)}to{filter:brightness(1.18)}}
+.pad .key{position:absolute;top:6px;right:7px;font-size:9.5px;font-family:ui-monospace,Consolas,monospace;
+  color:var(--dim2);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+.pad.active .key{color:#3a2400;background:rgba(0,0,0,.25);border-color:transparent}
+.pad .icon{width:26px;height:26px}
+.pad .label{font-size:12px;font-weight:600;color:var(--txt);word-break:break-word;max-width:100%;
+  background:transparent;border:0;text-align:center;font-family:inherit}
+.pad.active .label{color:#2a1a02}
+.pad .label:focus{outline:1px solid var(--sky);border-radius:4px}
+.pad .tools{position:absolute;bottom:5px;left:0;right:0;display:flex;justify-content:center;gap:4px;
+  opacity:0;transition:opacity .12s}
+.pad.loaded:hover .tools{opacity:1}
+.pad .tools button{font-size:9.5px;padding:2px 6px;border-radius:5px;background:var(--bg);color:var(--dim)}
+.pad .tools button:hover{color:var(--txt);border-color:var(--dim2)}
+.pad.binding{outline:2px solid var(--sky);outline-offset:-2px}
+.pad.binding::after{content:"Bấm phím bất kỳ…";position:absolute;inset:0;background:rgba(14,14,17,.9);
+  display:flex;align-items:center;justify-content:center;font-size:11px;color:#7dd3fc;text-align:center;padding:8px}
+.pad-add{border:1.5px dashed var(--line);border-radius:12px;aspect-ratio:1.15;display:flex;align-items:center;
+  justify-content:center;color:var(--dim2);font-size:26px;cursor:pointer}
+.pad-add:hover{color:var(--amber);border-color:var(--amber)}
+
+/* ---------- volume rows ---------- */
+.vol-row{border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+.vol-row .lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-bottom:6px}
+input[type=range]{width:100%;height:5px;border-radius:3px;appearance:none;background:var(--panel2);outline:none}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:15px;height:15px;border-radius:50%;
+  background:var(--sky);cursor:pointer;border:2px solid var(--bg)}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--sky);
+  cursor:pointer;border:2px solid var(--bg)}
+#sfxVol::-webkit-slider-thumb{background:var(--amber)}
+#sfxVol::-moz-range-thumb{background:var(--amber)}
+
+/* ---------- footer ---------- */
+.footbar{max-width:1800px;margin:16px auto 0;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between;
+  align-items:center;font-size:11px;color:var(--dim2);border-top:1px solid var(--line);padding-top:12px}
+.footbar code{background:var(--panel2);border:1px solid var(--line);padding:1px 5px;border-radius:4px;color:var(--amber)}
+.credit{max-width:1800px;margin:10px auto 0;text-align:center;font-size:11px;color:var(--dim2)}
+.credit b{color:var(--dim)}
+.credit a{color:var(--sky);text-decoration:none}
+.credit a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand-link" href="index.html">
+      <div class="logo"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Slice LED logo"><rect x="1" y="1" width="14" height="14" rx="3" fill="#ef4444"/><rect x="17" y="1" width="14" height="14" rx="3" fill="#10b981"/><rect x="1" y="17" width="14" height="14" rx="3" fill="#3b82f6"/><rect x="17" y="17" width="14" height="14" rx="3" fill="#f59e0b"/></svg></div>
+      <div>
+        <div class="brand-name">Zinh Doan ~ AVL ~ Sound and Event Tool</div>
+        <div class="brand-sub">Soundboard sự kiện — Live Show Control</div>
+      </div>
+    </a>
+    <div class="right">
+      <button type="button" class="theme-toggle" id="theme-toggle" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng/tối">
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 1 0 20.354 15.354Z"/></svg>
+      </button>
+      <a class="home" href="index.html">&larr; Trang tổng</a>
+    </div>
+  </header>
+
+  <div class="control-strip">
+    <div class="live"><span class="dot"></span> LIVE SHOW CONTROL</div>
+    <div class="spacer"></div>
+    <button class="btn-fade" id="btn-fade">Fade Out All (Xả nhạc)</button>
+    <button class="btn-panic" id="btn-panic">Panic / Stop All (ESC)</button>
+  </div>
+
+  <div class="board">
+
+    <!-- PLAYLIST -->
+    <section class="panel">
+      <div class="panel-hd">
+        <h2><svg class="icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="12" width="4" height="8" rx="2" fill="#38bdf8"/><rect x="9" y="6" width="4" height="20" rx="2" fill="#38bdf8"/><rect x="16" y="2" width="4" height="28" rx="2" fill="#38bdf8"/><rect x="23" y="8" width="4" height="16" rx="2" fill="#38bdf8"/></svg> Playlist nhạc nền</h2>
+        <div style="display:flex;gap:6px">
+          <button class="toggle" id="btn-shuffle">Shuffle: TẮT</button>
+          <button class="toggle" id="btn-repeat">Repeat: TẮT</button>
+        </div>
+      </div>
+
+      <button class="go-btn" id="btn-go">▶ CUE GO</button>
+
+      <div class="add-row">
+        <button id="btn-add-track">+ Thêm bài (chọn nhiều file được)</button>
+      </div>
+      <input type="file" id="file-track" accept="audio/*" multiple style="display:none">
+
+      <div id="trackList"></div>
+
+      <div class="vol-row">
+        <div class="lbl"><span>Playlist Master Vol</span><span id="plVolLbl">100%</span></div>
+        <input type="range" id="plVol" min="0" max="100" value="100">
+      </div>
+    </section>
+
+    <!-- SOUNDBOARD -->
+    <section class="panel">
+      <div class="panel-hd">
+        <h2><svg class="icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="11" height="11" rx="2.5" fill="#f59e0b"/><rect x="18" y="3" width="11" height="11" rx="2.5" fill="#f59e0b" opacity=".55"/><rect x="3" y="18" width="11" height="11" rx="2.5" fill="#f59e0b" opacity=".55"/><rect x="18" y="18" width="11" height="11" rx="2.5" fill="#f59e0b"/></svg> Soundboard hiệu ứng</h2>
+      </div>
+
+      <div class="sfx-grid" id="sfxGrid"></div>
+
+      <div class="vol-row">
+        <div class="lbl"><span>Soundboard SFX Vol</span><span id="sfxVolLbl">100%</span></div>
+        <input type="range" id="sfxVol" min="0" max="100" value="100">
+      </div>
+    </section>
+
+  </div>
+
+</div>
+
+<div class="footbar">
+  <span>Phím tắt: <code>ESC</code> = Stop All · <code>Space</code> = Cue Go · số/phím đã gán trên mỗi pad = kích hoạt SFX ngay</span>
+  <span>File nhạc chỉ nạp trong phiên làm việc hiện tại (đóng trang là mất) — kéo lại file trước mỗi show.</span>
+</div>
+
+<footer class="credit">
+  Công cụ được thực hiện bởi <b>Zinh Doan</b> · Freelancer AVL &nbsp;|&nbsp;
+  Gmail: <a href="mailto:Huuvinhit98@gmail.com">Huuvinhit98@gmail.com</a> &nbsp;|&nbsp;
+  SĐT: <a href="tel:0986416678">0986 416 678</a>
+  <div style="margin-top:6px;font-size:10px">© 2026 Zinh Doan. Bảo lưu mọi quyền — nghiêm cấm sao chép, phân phối lại hoặc sử dụng lại mã nguồn khi chưa có sự đồng ý bằng văn bản.</div>
+</footer>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const HOTKEY_POOL = ['1','2','3','4','5','6','7','8','9','0','-','=','q','w','e','r','t','y','u','i','o','p'];
+
+let sfxPads = [];   // {id, name, url, audio, key}
+let tracks = [];    // {id, name, url, audio}
+let currentTrackIndex = -1;
+let isShuffle = false, isRepeat = false;
+let sfxVolume = 1, plVolume = 1;
+let bindingPadId = null;
+let padSeq = 0, trackSeq = 0;
+let fadeTimer = null;
+
+/* ================= INIT ================= */
+function init(){
+  for(let i=0;i<6;i++) addSfxPad();
+  renderSfxGrid();
+  renderPlaylist();
+
+  $('btn-add-track').onclick = ()=> $('file-track').click();
+  $('file-track').onchange = e => { addTracks(e.target.files); e.target.value=''; };
+  $('trackList').addEventListener('dragover', e=>{ e.preventDefault(); $('trackList').classList.add('dragover'); });
+  $('trackList').addEventListener('dragleave', ()=> $('trackList').classList.remove('dragover'));
+  $('trackList').addEventListener('drop', e=>{
+    e.preventDefault(); $('trackList').classList.remove('dragover');
+    addTracks(e.dataTransfer.files);
+  });
+
+  $('btn-go').onclick = pressGo;
+  $('btn-shuffle').onclick = ()=>{ isShuffle=!isShuffle; $('btn-shuffle').textContent='Shuffle: '+(isShuffle?'BẬT':'TẮT'); $('btn-shuffle').classList.toggle('on',isShuffle); };
+  $('btn-repeat').onclick = ()=>{ isRepeat=!isRepeat; $('btn-repeat').textContent='Repeat: '+(isRepeat?'BẬT':'TẮT'); $('btn-repeat').classList.toggle('on',isRepeat); };
+
+  $('plVol').oninput = e=>{ plVolume = e.target.value/100; $('plVolLbl').textContent = e.target.value+'%';
+    const cur = tracks[currentTrackIndex]; if(cur && !cur.audio.paused) cur.audio.volume = plVolume; };
+  $('sfxVol').oninput = e=>{ sfxVolume = e.target.value/100; $('sfxVolLbl').textContent = e.target.value+'%';
+    sfxPads.forEach(p=>{ if(p.audio && !p.audio.paused) p.audio.volume = sfxVolume; }); };
+
+  $('btn-fade').onclick = fadeOutAll;
+  $('btn-panic').onclick = panicStopAll;
+
+  window.addEventListener('keydown', onGlobalKey);
+  initThemeToggle();
+}
+
+/* ================= THEME TOGGLE ================= */
+function effectiveTheme(){
+  const explicit = document.documentElement.getAttribute('data-theme');
+  if(explicit === 'light' || explicit === 'dark') return explicit;
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+}
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  try{ localStorage.setItem('avltools-theme', t); }catch(e){}
+}
+function initThemeToggle(){
+  $('theme-toggle').onclick = ()=> applyTheme(effectiveTheme()==='dark' ? 'light' : 'dark');
+}
+
+/* ================= SFX PADS ================= */
+function nextFreeKey(){
+  const used = new Set(sfxPads.map(p=>p.key).filter(Boolean));
+  return HOTKEY_POOL.find(k=>!used.has(k)) || null;
+}
+function addSfxPad(){
+  padSeq++;
+  sfxPads.push({ id:padSeq, name:'', url:null, audio:null, key: nextFreeKey() });
+}
+function loadSfxFile(padId, file){
+  const pad = sfxPads.find(p=>p.id===padId); if(!pad || !file) return;
+  if(pad.url) URL.revokeObjectURL(pad.url);
+  pad.url = URL.createObjectURL(file);
+  pad.audio = new Audio(pad.url);
+  pad.audio.preload = 'auto';
+  pad.name = file.name.replace(/\.[a-zA-Z0-9]+$/, '');
+  pad.audio.onended = ()=> renderSfxGrid();
+  renderSfxGrid();
+}
+function triggerPad(padId){
+  const pad = sfxPads.find(p=>p.id===padId); if(!pad || !pad.audio) return;
+  if(!pad.audio.paused){
+    pad.audio.pause(); pad.audio.currentTime = 0;
+  } else {
+    pad.audio.volume = sfxVolume;
+    pad.audio.currentTime = 0;
+    pad.audio.play().catch(()=>{});
+  }
+  renderSfxGrid();
+}
+function removePad(padId){
+  const pad = sfxPads.find(p=>p.id===padId); if(!pad) return;
+  if(pad.audio){ pad.audio.pause(); }
+  if(pad.url) URL.revokeObjectURL(pad.url);
+  pad.name=''; pad.url=null; pad.audio=null;
+  renderSfxGrid();
+}
+function startBindKey(padId){
+  bindingPadId = padId;
+  renderSfxGrid();
+}
+function renderSfxGrid(){
+  const grid = $('sfxGrid');
+  grid.innerHTML = '';
+  sfxPads.forEach(pad=>{
+    const el = document.createElement('div');
+    const loaded = !!pad.audio;
+    const playing = loaded && !pad.audio.paused;
+    el.className = 'pad ' + (loaded ? 'loaded' : 'empty') + (playing ? ' active' : '') + (bindingPadId===pad.id ? ' binding':'');
+
+    if(loaded){
+      el.innerHTML =
+        '<span class="key">'+(pad.key ? pad.key.toUpperCase() : '—')+'</span>'+
+        '<svg class="icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="12" width="4" height="8" rx="2" fill="currentColor"/><rect x="9" y="6" width="4" height="20" rx="2" fill="currentColor"/><rect x="16" y="2" width="4" height="28" rx="2" fill="currentColor"/><rect x="23" y="8" width="4" height="16" rx="2" fill="currentColor"/></svg>'+
+        '<input class="label" value="'+pad.name.replace(/"/g,'&quot;')+'" data-rename readonly title="Bấm nút Đổi tên để sửa">'+
+        '<div class="tools"><button type="button" data-rename-btn>Đổi tên</button><button type="button" data-bind>Đổi phím</button><button type="button" data-clear>Xóa</button></div>';
+      el.onclick = (e)=>{
+        if(e.target.closest('[data-rename-btn],[data-bind],[data-clear]')) return;
+        const inp = e.target.closest('[data-rename]');
+        if(inp && !inp.readOnly) return;
+        triggerPad(pad.id);
+      };
+      const nameInput = el.querySelector('[data-rename]');
+      nameInput.oninput = e=>{ pad.name = e.target.value; };
+      nameInput.addEventListener('blur', ()=>{ nameInput.readOnly = true; });
+      el.querySelector('[data-rename-btn]').onclick = e=>{ e.stopPropagation(); nameInput.readOnly=false; nameInput.focus(); nameInput.select(); };
+      el.querySelector('[data-bind]').onclick = e=>{ e.stopPropagation(); startBindKey(pad.id); };
+      el.querySelector('[data-clear]').onclick = e=>{ e.stopPropagation(); removePad(pad.id); };
+    } else {
+      el.innerHTML = '<span class="key">'+(pad.key ? pad.key.toUpperCase() : '—')+'</span>+ Kéo file vào đây<br>hoặc bấm để chọn';
+      const input = document.createElement('input');
+      input.type='file'; input.accept='audio/*'; input.style.display='none';
+      input.onchange = e=>{ if(e.target.files[0]) loadSfxFile(pad.id, e.target.files[0]); };
+      el.appendChild(input);
+      el.onclick = ()=> input.click();
+      el.addEventListener('dragover', e=>{ e.preventDefault(); el.classList.add('dragover'); });
+      el.addEventListener('dragleave', ()=> el.classList.remove('dragover'));
+      el.addEventListener('drop', e=>{
+        e.preventDefault(); el.classList.remove('dragover');
+        if(e.dataTransfer.files[0]) loadSfxFile(pad.id, e.dataTransfer.files[0]);
+      });
+    }
+    grid.appendChild(el);
+  });
+
+  const addTile = document.createElement('div');
+  addTile.className = 'pad-add';
+  addTile.textContent = '+';
+  addTile.title = 'Thêm pad mới';
+  addTile.onclick = ()=>{ addSfxPad(); renderSfxGrid(); };
+  grid.appendChild(addTile);
+}
+
+/* ================= PLAYLIST ================= */
+function addTracks(fileList){
+  Array.from(fileList).forEach(file=>{
+    trackSeq++;
+    const url = URL.createObjectURL(file);
+    const audio = new Audio(url);
+    audio.preload = 'auto';
+    const track = { id:trackSeq, name:file.name.replace(/\.[a-zA-Z0-9]+$/, ''), url, audio };
+    audio.onended = ()=> advanceTrack(false);
+    tracks.push(track);
+  });
+  if(currentTrackIndex === -1 && tracks.length) currentTrackIndex = 0;
+  renderPlaylist();
+}
+function removeTrack(index){
+  const t = tracks[index]; if(!t) return;
+  t.audio.pause(); URL.revokeObjectURL(t.url);
+  tracks.splice(index,1);
+  if(currentTrackIndex === index) currentTrackIndex = tracks.length ? Math.min(index, tracks.length-1) : -1;
+  else if(currentTrackIndex > index) currentTrackIndex--;
+  renderPlaylist();
+}
+function moveTrack(index, dir){
+  const j = index+dir; if(j<0 || j>=tracks.length) return;
+  [tracks[index], tracks[j]] = [tracks[j], tracks[index]];
+  if(currentTrackIndex===index) currentTrackIndex=j; else if(currentTrackIndex===j) currentTrackIndex=index;
+  renderPlaylist();
+}
+function anyTrackPlaying(){ return tracks.some(t=>!t.audio.paused); }
+
+function selectTrack(index, crossfade){
+  if(index<0 || index>=tracks.length) return;
+  const prevIndex = tracks.findIndex(t=>!t.audio.paused);
+  const next = tracks[index];
+  currentTrackIndex = index;
+
+  if(crossfade && prevIndex !== -1 && prevIndex !== index){
+    const prev = tracks[prevIndex];
+    next.audio.currentTime = 0; next.audio.volume = 0;
+    next.audio.play().catch(()=>{});
+    const steps = 24, dur = 1200;
+    let i = 0;
+    clearInterval(fadeTimer);
+    fadeTimer = setInterval(()=>{
+      i++;
+      const t = i/steps;
+      prev.audio.volume = Math.max(0, plVolume*(1-t));
+      next.audio.volume = Math.min(plVolume, plVolume*t);
+      if(i>=steps){
+        clearInterval(fadeTimer);
+        prev.audio.pause(); prev.audio.currentTime = 0;
+        next.audio.volume = plVolume;
+        renderPlaylist();
+      }
+    }, dur/steps);
+  } else {
+    tracks.forEach(t=>{ if(t!==next){ t.audio.pause(); t.audio.currentTime = 0; } });
+    next.audio.currentTime = 0;
+    next.audio.volume = plVolume;
+    next.audio.play().catch(()=>{});
+  }
+  renderPlaylist();
+}
+function pressGo(){
+  if(!tracks.length) return;
+  if(anyTrackPlaying()) advanceTrack(true);
+  else selectTrack(currentTrackIndex===-1?0:currentTrackIndex, false);
+}
+function advanceTrack(crossfade){
+  if(!tracks.length) return;
+  if(isRepeat){ selectTrack(currentTrackIndex, crossfade); return; }
+  if(isShuffle && tracks.length>1){
+    let r; do{ r = Math.floor(Math.random()*tracks.length); }while(r===currentTrackIndex);
+    selectTrack(r, crossfade); return;
+  }
+  const next = currentTrackIndex+1;
+  if(next < tracks.length) selectTrack(next, crossfade);
+  else { currentTrackIndex = -1; renderPlaylist(); }
+}
+function renderPlaylist(){
+  const L = $('trackList');
+  if(!tracks.length){ L.innerHTML = '<div class="empty-hint">Chưa có bài nào — kéo file nhạc vào đây hoặc bấm "+ Thêm bài".</div>'; return; }
+  L.innerHTML = '';
+  tracks.forEach((t,i)=>{
+    const playing = !t.audio.paused;
+    const el = document.createElement('div');
+    el.className = 'track' + (i===currentTrackIndex?' current':'') + (playing?' playing':'');
+    el.innerHTML =
+      '<span class="idx">'+String(i+1).padStart(2,'0')+'</span>'+
+      '<input class="name" value="'+t.name.replace(/"/g,'&quot;')+'" readonly title="Bấm nút ✎ để đổi tên">'+
+      '<span class="state">'+(playing?'ĐANG PHÁT':(i===currentTrackIndex?'ĐÃ CHỌN':''))+'</span>'+
+      '<span class="mv"><button type="button" data-rename-btn title="Đổi tên">✎</button><button type="button" data-up title="Lên">↑</button><button type="button" data-down title="Xuống">↓</button><button type="button" data-del title="Xóa">✕</button></span>';
+    el.onclick = (e)=>{
+      if(e.target.closest('button')) return;
+      const inp = e.target.closest('input');
+      if(inp && !inp.readOnly) return;
+      selectTrack(i, true);
+    };
+    const nameInput = el.querySelector('.name');
+    nameInput.oninput = e=>{ t.name = e.target.value; };
+    nameInput.addEventListener('blur', ()=>{ nameInput.readOnly = true; });
+    el.querySelector('[data-rename-btn]').onclick = e=>{ e.stopPropagation(); nameInput.readOnly=false; nameInput.focus(); nameInput.select(); };
+    el.querySelector('[data-up]').onclick = e=>{ e.stopPropagation(); moveTrack(i,-1); };
+    el.querySelector('[data-down]').onclick = e=>{ e.stopPropagation(); moveTrack(i,1); };
+    el.querySelector('[data-del]').onclick = e=>{ e.stopPropagation(); removeTrack(i); };
+    L.appendChild(el);
+  });
+}
+
+/* ================= FADE / PANIC ================= */
+function fadeOutAll(){
+  clearInterval(fadeTimer);
+  const steps = 30, dur = 2500;
+  let i = 0;
+  fadeTimer = setInterval(()=>{
+    i++;
+    const f = 1 - i/steps;
+    sfxPads.forEach(p=>{ if(p.audio && !p.audio.paused) p.audio.volume = Math.max(0, sfxVolume*f); });
+    tracks.forEach(t=>{ if(!t.audio.paused) t.audio.volume = Math.max(0, plVolume*f); });
+    if(i>=steps){ clearInterval(fadeTimer); panicStopAll(); }
+  }, dur/steps);
+}
+function panicStopAll(){
+  clearInterval(fadeTimer);
+  sfxPads.forEach(p=>{ if(p.audio){ p.audio.pause(); p.audio.currentTime = 0; } });
+  tracks.forEach(t=>{ t.audio.pause(); t.audio.currentTime = 0; });
+  renderSfxGrid();
+  renderPlaylist();
+}
+
+/* ================= HOTKEYS ================= */
+function onGlobalKey(e){
+  const typing = ['INPUT','TEXTAREA'].includes(document.activeElement.tagName);
+
+  if(bindingPadId !== null){
+    e.preventDefault();
+    if(e.key === 'Escape'){ bindingPadId = null; renderSfxGrid(); return; }
+    const key = e.key.length===1 ? e.key.toLowerCase() : e.key;
+    sfxPads.forEach(p=>{ if(p.key===key) p.key=null; });
+    const pad = sfxPads.find(p=>p.id===bindingPadId);
+    if(pad) pad.key = key;
+    bindingPadId = null;
+    renderSfxGrid();
+    return;
+  }
+
+  if(e.key === 'Escape'){ panicStopAll(); return; }
+  if(typing) return;
+  if(e.key === ' '){ e.preventDefault(); pressGo(); return; }
+
+  const key = e.key.length===1 ? e.key.toLowerCase() : e.key;
+  const pad = sfxPads.find(p=>p.key===key && p.audio);
+  if(pad) triggerPad(pad.id);
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

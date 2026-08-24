@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pad Play Music 2 — Zinh Doan AVL Tools</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-label%3D%22Slice%20LED%20logo%22%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23ef4444%22/%3E%3Crect%20x%3D%2217%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%2310b981%22/%3E%3Crect%20x%3D%221%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%233b82f6%22/%3E%3Crect%20x%3D%2217%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23f59e0b%22/%3E%3C/svg%3E">
+<style>
+/* ===================== BIẾN MÀU & FONT CHUNG (Cyberpunk / Dark Mode) ===================== */
+:root{
+  --bg-dark: #08070d;
+  --bg-panel: #12111c;
+  --bg-panel-2: #181726;
+  --neon-cyan: #00fff2;
+  --neon-pink: #ff2ec4;
+  --neon-purple: #b026ff;
+  --neon-yellow: #f7ff00;
+  --text-main: #e8e8f5;
+  --text-dim: #8a8aa3;
+  --border-soft: rgba(0,255,242,0.15);
+  --tile-bg: #171625;
+  --track-bg: #22212f;
+  --pad-radial-end: #14131f;
+  --pad-radial-playing-end: #1c1a2c;
+  --body-bg: radial-gradient(circle at 15% 20%, rgba(176,38,255,0.15), transparent 40%),
+             radial-gradient(circle at 85% 80%, rgba(0,255,242,0.12), transparent 40%),
+             linear-gradient(180deg, #060509 0%, #0b0a13 100%);
+  --grid-line-color: rgba(0,255,242,0.04);
+}
+
+/* ===================== CHẾ ĐỘ SÁNG (Light Mode) ===================== */
+/* Bấm nút Sáng/Tối ở góc trên bên phải sẽ gắn class này vào <body> */
+body.theme-light{
+  --bg-dark: #eef0f7;
+  --bg-panel: #ffffff;
+  --bg-panel-2: #f2f3fb;
+  --neon-cyan: #0aa7a0;
+  --neon-pink: #d6169b;
+  --neon-purple: #7b2fd6;
+  --neon-yellow: #b98f00;
+  --text-main: #1c1c2b;
+  --text-dim: #62627a;
+  --border-soft: rgba(20,20,40,0.14);
+  --tile-bg: #eef0fa;
+  --track-bg: #dfe1f0;
+  --pad-radial-end: #ffffff;
+  --pad-radial-playing-end: #eef3ff;
+  --body-bg: radial-gradient(circle at 15% 20%, rgba(176,38,255,0.08), transparent 40%),
+             radial-gradient(circle at 85% 80%, rgba(10,167,160,0.08), transparent 40%),
+             linear-gradient(180deg, #f5f6fb 0%, #e9ebf7 100%);
+  --grid-line-color: rgba(20,20,40,0.05);
+}
+
+*{ box-sizing: border-box; margin:0; padding:0; }
+
+body{
+  min-height: 100vh;
+  background: var(--body-bg);
+  background-attachment: fixed;
+  color: var(--text-main);
+  font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif;
+  padding: 24px 16px 90px; /* chừa chỗ cho thanh "Đang phát" cố định phía dưới */
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Hiệu ứng lưới nền kiểu cyberpunk (tự đổi màu theo theme) */
+body::before{
+  content:"";
+  position: fixed; inset:0;
+  background-image:
+    linear-gradient(var(--grid-line-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Nút chuyển chế độ Sáng / Tối - luôn nổi ở góc trên bên phải */
+.theme-toggle-btn{
+  position: fixed;
+  top: 16px; right: 16px;
+  z-index: 20;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-soft);
+  background: var(--bg-panel);
+  color: var(--text-main);
+  font-size: 1.25rem;
+  cursor: pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 0 10px rgba(0,255,242,0.2);
+  transition: all 0.2s ease;
+}
+.theme-toggle-btn:hover{ box-shadow: 0 0 16px var(--neon-cyan); transform: scale(1.06); }
+
+/* Nút quay về Trang tổng của bộ công cụ — luôn nổi ở góc trên bên trái */
+.back-home-link{
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 20;
+  display:flex; align-items:center;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 23px;
+  border: 1.5px solid var(--border-soft);
+  background: var(--bg-panel);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 0 10px rgba(0,255,242,0.2);
+  transition: all 0.2s ease;
+}
+.back-home-link:hover{ box-shadow: 0 0 16px var(--neon-cyan); color: var(--neon-cyan); }
+
+/* ===================== THANH "ĐANG PHÁT" CỐ ĐỊNH ===================== */
+/* Luôn hiện ở đáy màn hình để thấy ngay Pad nào đang chạy và dừng nhanh,
+   không phải dò tìm giữa 15 pad khi đang chạy sự kiện. */
+.now-playing-bar{
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 15;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border-soft);
+  box-shadow: 0 -6px 24px rgba(0,0,0,0.45);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.now-playing-bar .np-label{
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  white-space: nowrap;
+}
+.now-playing-list{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.now-playing-empty{
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+.now-playing-chip{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--tile-bg);
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  padding: 5px 6px 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(0,255,242,0.3);
+}
+.now-playing-chip .np-stop{
+  border: none;
+  background: rgba(255,46,196,0.15);
+  color: var(--neon-pink);
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.72rem;
+  line-height: 1;
+  display:flex; align-items:center; justify-content:center;
+  transition: all 0.2s;
+}
+.now-playing-chip .np-stop:hover{ box-shadow: 0 0 8px rgba(255,46,196,0.6); }
+
+.wrap{ position: relative; z-index: 1; max-width: 1800px; margin: 0 auto; }
+
+/* ===================== HEADER ===================== */
+header{ text-align:center; margin-bottom: 30px; }
+header h1{
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-main);
+  text-shadow: 0 0 8px var(--neon-cyan), 0 0 22px rgba(0,255,242,0.5);
+  font-weight: 800;
+}
+header p{
+  margin-top: 8px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+header span{ color: var(--neon-pink); }
+
+/* ===================== BỐ CỤC CHÍNH: 2 CỘT ===================== */
+.main-grid{
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px){
+  .main-grid{ grid-template-columns: 1fr; }
+}
+
+.panel{
+  background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-panel-2) 100%);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.02) inset, 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.panel-title{
+  display:flex; align-items:center; gap:10px;
+  font-size: 1.05rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border-soft);
+}
+.panel-title .dot{
+  width:10px; height:10px; border-radius:50%;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+  animation: blink 1.6s infinite ease-in-out;
+}
+@keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+/* Nút "Dừng tất cả Pad" nằm cạnh tiêu đề khu Pad */
+.stop-all-btn{
+  margin-left: auto;
+  font-size: 0.68rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--neon-pink);
+  background: rgba(255,46,196,0.08);
+  color: var(--neon-pink);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.stop-all-btn:hover{ box-shadow: 0 0 12px rgba(255,46,196,0.6); }
+
+.pad-hint{
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin: 0 0 14px;
+  letter-spacing: 0.3px;
+}
+
+/* Thanh công cụ tải nhạc hàng loạt cho Pad */
+.pad-toolbar{
+  display:flex; align-items:center; flex-wrap:wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.pad-bulk-label{
+  display:inline-block;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(0,255,242,0.18), rgba(176,38,255,0.18));
+  border: 1px solid var(--neon-cyan);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.pad-bulk-label:hover{ box-shadow: 0 0 14px rgba(0,255,242,0.5); }
+.bulk-status{
+  font-size: 0.72rem;
+  color: var(--neon-cyan);
+}
+
+/* ===================== PHẦN 1: MUSIC PLAYER ===================== */
+#now-playing{
+  text-align:center;
+  padding: 14px 10px 20px;
+}
+#now-playing .track-name{
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-shadow: 0 0 10px rgba(0,255,242,0.4);
+  white-space: nowrap; overflow:hidden; text-overflow: ellipsis;
+}
+#now-playing .track-sub{
+  margin-top:4px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+/* Thanh tiến trình */
+.progress-area{ margin: 18px 0; }
+.progress-times{
+  display:flex; justify-content: space-between;
+  font-size: 0.75rem; color: var(--text-dim);
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+input[type="range"]#progress-bar{
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 6px;
+  background: var(--track-bg);
+  outline: none;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--border-soft);
+}
+input[type="range"]#progress-bar::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan), 0 0 16px var(--neon-cyan);
+  cursor: pointer;
+  border: 2px solid #08070d;
+}
+input[type="range"]#progress-bar::-moz-range-thumb{
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan), 0 0 16px var(--neon-cyan);
+  cursor: pointer; border: 2px solid #08070d;
+}
+
+/* Nút điều khiển chính */
+.controls-row{
+  display:flex; justify-content:center; align-items:center;
+  gap: 16px; margin: 16px 0 8px;
+}
+.ctrl-btn{
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-soft);
+  background: var(--tile-bg);
+  color: var(--text-main);
+  font-size: 1.3rem;
+  cursor: pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition: all 0.2s ease;
+}
+.ctrl-btn:hover{ border-color: var(--neon-cyan); box-shadow: 0 0 12px rgba(0,255,242,0.35); transform: translateY(-2px); }
+.ctrl-btn:active{ transform: translateY(0); }
+.ctrl-btn.big{ width: 72px; height: 72px; font-size: 1.7rem; }
+
+.ctrl-btn.active-glow{
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan), 0 0 26px rgba(0,255,242,0.6);
+}
+.ctrl-btn.loop-on{
+  border-color: var(--neon-yellow);
+  color: var(--neon-yellow);
+  box-shadow: 0 0 10px var(--neon-yellow), 0 0 26px rgba(247,255,0,0.55);
+}
+
+/* Volume */
+.volume-row{
+  display:flex; align-items:center; gap: 10px;
+  margin-top: 14px; padding: 0 6px;
+  color: var(--text-dim); font-size: 0.85rem;
+}
+.volume-row input[type="range"]{
+  flex:1; height:5px; border-radius:5px; background: var(--track-bg);
+  -webkit-appearance:none; cursor:pointer;
+}
+.volume-row input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
+  background: var(--neon-purple); box-shadow: 0 0 8px var(--neon-purple);
+  cursor:pointer;
+}
+
+/* Upload nhạc nền */
+.upload-box{
+  margin-top: 18px;
+  border: 1.5px dashed var(--border-soft);
+  border-radius: 10px;
+  padding: 12px;
+  text-align:center;
+}
+.upload-label{
+  display:inline-block;
+  padding: 9px 18px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(176,38,255,0.25), rgba(0,255,242,0.2));
+  border: 1px solid var(--neon-purple);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.upload-label:hover{ box-shadow: 0 0 14px rgba(176,38,255,0.6); }
+#upload-music{ display:none; }
+
+/* Playlist */
+.playlist{
+  margin-top: 18px;
+  list-style: none;
+  max-height: 220px;
+  overflow-y: auto;
+  display:flex; flex-direction:column; gap: 6px;
+}
+.playlist::-webkit-scrollbar{ width:6px; }
+.playlist::-webkit-scrollbar-thumb{ background: var(--neon-purple); border-radius:6px; }
+
+.playlist li{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px;
+  padding: 10px 12px;
+  background: var(--tile-bg);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.playlist li:hover{ border-color: var(--border-soft); }
+.playlist li.playing{
+  border-color: var(--neon-cyan);
+  background: rgba(0,255,242,0.08);
+  box-shadow: 0 0 10px rgba(0,255,242,0.25) inset;
+  color: var(--neon-cyan);
+}
+.playlist li .track-index{ color: var(--text-dim); margin-right: 8px; }
+.playlist li .track-title{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.playlist li .track-tag{
+  font-size: 0.65rem; padding: 2px 7px; border-radius: 20px;
+  border: 1px solid var(--border-soft); color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ===================== PHẦN 2: DJ SOUND PAD ===================== */
+/* Gộp chung 15 pad trong 1 lưới duy nhất, 5 cột = vừa đủ 3 hàng,
+   không cần cuộn -> nhìn thấy hết và bấm nhanh khi đang chạy sự kiện.
+   Dùng minmax(0,1fr) thay vì 1fr để MỌI cột luôn rộng bằng nhau, không
+   bị 1 pad có nội dung dài kéo lệch kích cỡ cả lưới. */
+.pad-grid{
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 900px){
+  /* Khi 2 cột chính gộp thành 1 cột, panel Pad rộng hơn hẳn */
+  .pad-grid{ grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (max-width: 600px){
+  .pad-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 420px){
+  .pad-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.pad-cell{
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  min-width: 0; /* Không cho nội dung bên trong ép cột giãn không đều */
+}
+
+.pad-btn{
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 2px solid var(--pad-color, var(--neon-pink));
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.06), var(--pad-radial-end) 70%);
+  color: var(--text-main);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 4px;
+  transition: transform 0.12s ease, box-shadow 0.2s ease;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+.pad-btn .pad-icon{ font-size: 1.5rem; }
+.pad-btn:hover{ transform: translateY(-2px); box-shadow: 0 0 14px var(--pad-color, var(--neon-pink)); }
+.pad-btn:active{ transform: scale(0.97); }
+
+/* Badge hiển thị phím tắt bàn phím ngay trên mỗi Pad */
+.pad-key{
+  position: absolute;
+  top: 5px; right: 6px;
+  font-size: 0.6rem;
+  padding: 1px 5px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.35);
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Hiệu ứng LED phát sáng khi Pad đang phát */
+.pad-btn.playing{
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.12), var(--pad-radial-playing-end) 70%);
+  box-shadow:
+    0 0 12px var(--pad-color, var(--neon-pink)),
+    0 0 30px var(--pad-color, var(--neon-pink)),
+    inset 0 0 18px rgba(255,255,255,0.08);
+  animation: pad-pulse 0.9s infinite ease-in-out;
+}
+@keyframes pad-pulse{
+  0%,100%{ filter: brightness(1); }
+  50%{ filter: brightness(1.35); }
+}
+
+.pad-file-row{
+  width:100%;
+}
+/* Nút "Đổi âm thanh" phóng to full-width, dễ thấy dễ bấm hơn bản pill nhỏ cũ.
+   overflow:hidden + text-overflow:ellipsis giữ cho nội dung không bao giờ
+   ép lưới Pad giãn lệch, dù tên rất dài. */
+.pad-file-label{
+  display:block;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 8px 6px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-soft);
+  background: var(--tile-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  text-align: center;
+  transition: all 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pad-file-label:hover{
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0,255,242,0.3);
+}
+.pad-file-input{ display:none; }
+
+.pad-current-file{
+  font-size: 0.66rem;
+  color: var(--text-dim);
+  max-width: 100%;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* Footer nhỏ */
+footer{
+  text-align:center;
+  margin-top: 34px;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+footer span{ color: var(--neon-pink); }
+</style>
+</head>
+<body>
+
+<!-- Nút chuyển giao diện Sáng / Tối -->
+<button id="theme-toggle" class="theme-toggle-btn" title="Chuyển giao diện Sáng / Tối">🌙</button>
+<!-- Nút quay về Trang tổng bộ công cụ -->
+<a href="index.html" class="back-home-link" title="Về trang tổng Zinh Doan AVL Tools">&larr; Trang tổng</a>
+
+<div class="wrap">
+  <header>
+    <h1>ZIT-Event Music <span>Center</span></h1>
+    <p>Dark Mode // Cyberpunk DJ Console For Event — <span style="color:var(--neon-yellow)">Pad Play Music 2</span></p>
+  </header>
+
+  <div class="main-grid">
+
+    <!-- ===================== PHẦN 1: MUSIC PLAYER ===================== -->
+    <section class="panel" id="panel-player">
+      <div class="panel-title"><span class="dot"></span> Music Player - Nhạc nền sự kiện</div>
+
+      <div id="now-playing">
+        <div class="track-name" id="track-name">Chưa chọn bài hát</div>
+        <div class="track-sub" id="track-sub">Chọn 1 bài trong Playlist bên dưới</div>
+      </div>
+
+      <div class="progress-area">
+        <div class="progress-times">
+          <span id="current-time">00:00</span>
+          <span id="duration-time">00:00</span>
+        </div>
+        <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
+      </div>
+
+      <div class="controls-row">
+        <button class="ctrl-btn" id="btn-stop" title="Dừng hẳn">⏹</button>
+        <button class="ctrl-btn big" id="btn-play" title="Phát / Tạm dừng">▶</button>
+        <button class="ctrl-btn" id="btn-loop" title="Lặp lại bài hiện tại">🔁</button>
+      </div>
+
+      <div class="volume-row">
+        <span>🔊</span>
+        <input type="range" id="volume-bar" min="0" max="1" step="0.01" value="0.8">
+      </div>
+
+      <div class="upload-box">
+        <label class="upload-label" for="upload-music">+ Tải nhạc lên (.mp3)</label>
+        <input type="file" id="upload-music" accept="audio/*" multiple>
+      </div>
+
+      <ul class="playlist" id="playlist"></ul>
+    </section>
+
+    <!-- ===================== PHẦN 2: DJ SOUND PAD ===================== -->
+    <section class="panel" id="panel-pad">
+      <div class="panel-title">
+        <span class="dot"></span> DJ Sound Pad - Hiệu ứng nhanh
+        <button id="btn-stop-all-pads" class="stop-all-btn" title="Dừng tất cả âm thanh Pad đang chạy">⏹ Dừng tất cả</button>
+      </div>
+
+      <!-- Thanh công cụ: thêm hàng loạt Pad mới cùng lúc -->
+      <div class="pad-toolbar">
+        <label class="pad-bulk-label" for="bulk-pad-upload">📂 Thêm nhiều Pad cùng lúc</label>
+        <input type="file" id="bulk-pad-upload" class="pad-file-input" accept="audio/*" multiple>
+        <span class="bulk-status" id="bulk-status"></span>
+      </div>
+
+      <p class="pad-hint">Pad 1-10: hiệu ứng nhanh. Pad 11-15: nhạc dẫn MC (mời lên sân khấu, giới thiệu đại biểu...). Bấm để phát, bấm lại để dừng — hoặc dùng phím tắt hiện trên mỗi pad. Dùng "Đổi âm thanh" dưới mỗi pad để thay 1 bài, hoặc "Thêm nhiều Pad cùng lúc" ở trên để nạp nhiều bài — mỗi file sẽ tạo 1 pad mới nối tiếp phía dưới, không ghi đè pad đang có.</p>
+
+      <div class="pad-grid" id="pad-grid">
+        <!-- Các nút Pad sẽ được JS render tự động vào đây -->
+      </div>
+    </section>
+
+  </div>
+
+  <footer>Được xây dựng cho các sự kiện trực tiếp — <span>Bấm là chạy, không cần internet</span>
+    <div style="margin-top:6px;font-size:0.68rem;letter-spacing:0.3px;text-transform:none">© 2026 Zinh Doan. Bảo lưu mọi quyền — nghiêm cấm sao chép, phân phối lại hoặc sử dụng lại mã nguồn khi chưa có sự đồng ý bằng văn bản.</div>
+  </footer>
+</div>
+
+<!-- Thanh "Đang phát" cố định dưới màn hình: xem nhanh Pad nào đang chạy
+     và dừng ngay bằng nút ✕ trên từng chip, không cần dò tìm trong lưới Pad -->
+<div class="now-playing-bar">
+  <span class="np-label">🔊 Đang phát</span>
+  <div class="now-playing-list" id="now-playing-list">
+    <span class="now-playing-empty">Không có gì đang phát</span>
+  </div>
+</div>
+
+<!-- Thẻ audio ẩn dùng cho nhạc nền chính -->
+<audio id="main-audio" preload="metadata"></audio>
+
+<script>
+/* ==========================================================================
+   EVENT MUSIC CENTER - JAVASCRIPT THUẦN (Không dùng thư viện ngoài)
+   Gồm 2 phần: (1) Music Player nhạc nền, (2) DJ Sound Pad hiệu ứng nhanh
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------- */
+/* CHẾ ĐỘ SÁNG / TỐI (Theme Toggle)                                        */
+/* ---------------------------------------------------------------------- */
+const themeToggleBtn = document.getElementById('theme-toggle');
+
+// Xác định theme khi mở trang: ưu tiên lựa chọn đã lưu từ lần trước (nếu có)
+// -> nếu chưa từng chọn thì theo cài đặt Sáng/Tối của hệ điều hành/trình duyệt
+// -> nếu không xác định được thì mặc định là SÁNG.
+const savedTheme = localStorage.getItem('emc-theme');
+let useLightTheme;
+if(savedTheme === 'light' || savedTheme === 'dark'){
+  useLightTheme = (savedTheme === 'light');
+} else if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+  useLightTheme = false; // Hệ thống đang đặt chế độ Tối -> theo Tối
+} else {
+  useLightTheme = true; // Không rõ / hệ thống đang Sáng -> mặc định SÁNG
+}
+
+if(useLightTheme){
+  document.body.classList.add('theme-light');
+  themeToggleBtn.textContent = '☀️';
+} else {
+  themeToggleBtn.textContent = '🌙';
+}
+
+themeToggleBtn.addEventListener('click', () => {
+  document.body.classList.toggle('theme-light');
+  const isLight = document.body.classList.contains('theme-light');
+  themeToggleBtn.textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('emc-theme', isLight ? 'light' : 'dark');
+});
+
+
+/* ---------------------------------------------------------------------- */
+/* TIỆN ÍCH DÙNG CHUNG: DIM NHẠC TRƯỚC KHI DỪNG                             */
+/* ---------------------------------------------------------------------- */
+// Khi bấm DỪNG (nhạc nền hoặc Pad), âm lượng sẽ giảm dần (dim) trong 0.5s
+// thay vì cắt đột ngột, sau đó mới thực sự pause + đưa về đầu bài.
+function fadeOutAndStop(audio, duration, onDone){
+  duration = duration || 500;
+  const steps = 20;
+  const stepTime = duration / steps;
+  const startVolume = audio.volume;
+  let count = 0;
+
+  const timer = setInterval(() => {
+    count++;
+    audio.volume = Math.max(0, startVolume * (1 - count / steps));
+    if(count >= steps){
+      clearInterval(timer);
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = startVolume; // khôi phục âm lượng gốc cho lần phát kế tiếp
+      if(onDone) onDone();
+    }
+  }, stepTime);
+}
+
+
+/* ---------------------------------------------------------------------- */
+/* PHẦN 1: MUSIC PLAYER                                                    */
+/* ---------------------------------------------------------------------- */
+
+// Danh sách phát giả lập ban đầu (10 bài nhạc sự kiện có sẵn tên file)
+// Lưu ý: đây là tên file giả lập, khi chạy thực tế cần đặt các file mp3
+// tương ứng cùng thư mục với file HTML này, hoặc người dùng tự Import.
+let playlist = [
+  { name: "Nhạc khai mạc",              src: "khai_mac.mp3",           tag: "Có sẵn" },
+  { name: "Nhạc nền sự kiện 1",         src: "nhac_nen_1.mp3",         tag: "Có sẵn" },
+  { name: "Nhạc nền sự kiện 2",         src: "nhac_nen_2.mp3",         tag: "Có sẵn" },
+  { name: "Nhạc nền sự kiện 3",         src: "nhac_nen_3.mp3",         tag: "Có sẵn" },
+  { name: "Nhạc nền sự kiện 4",         src: "nhac_nen_4.mp3",         tag: "Có sẵn" },
+  { name: "Nhạc nền sự kiện 5",         src: "nhac_nen_5.mp3",         tag: "Có sẵn" },
+  { name: "Nhạc chờ / đón khách",       src: "nhac_cho.mp3",           tag: "Có sẵn" },
+  { name: "Nhạc giữa chương trình",     src: "giua_chuong_trinh.mp3",  tag: "Có sẵn" },
+  { name: "Nhạc trao giải",             src: "trao_giai.mp3",          tag: "Có sẵn" },
+  { name: "Nhạc bế mạc",                src: "be_mac.mp3",             tag: "Có sẵn" }
+];
+
+let currentTrackIndex = -1; // Chưa chọn bài nào ban đầu
+let isSeeking = false;      // Cờ đánh dấu người dùng đang kéo thanh tiến trình
+
+const mainAudio     = document.getElementById('main-audio');
+const playlistEl    = document.getElementById('playlist');
+const trackNameEl   = document.getElementById('track-name');
+const trackSubEl    = document.getElementById('track-sub');
+const btnPlay        = document.getElementById('btn-play');
+const btnStop        = document.getElementById('btn-stop');
+const btnLoop         = document.getElementById('btn-loop');
+const progressBar    = document.getElementById('progress-bar');
+const currentTimeEl  = document.getElementById('current-time');
+const durationTimeEl = document.getElementById('duration-time');
+const volumeBar      = document.getElementById('volume-bar');
+const uploadInput    = document.getElementById('upload-music');
+
+// Định dạng giây -> mm:ss
+function formatTime(seconds){
+  if(!isFinite(seconds) || seconds < 0) seconds = 0;
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+// Vẽ lại toàn bộ danh sách Playlist ra giao diện
+function renderPlaylist(){
+  playlistEl.innerHTML = '';
+  playlist.forEach((track, index) => {
+    const li = document.createElement('li');
+    li.className = (index === currentTrackIndex) ? 'playing' : '';
+    li.innerHTML = `
+      <span class="track-index">${(index+1).toString().padStart(2,'0')}</span>
+      <span class="track-title">${track.name}</span>
+      <span class="track-tag">${track.tag}</span>
+    `;
+    // Bấm vào 1 bài trong playlist -> phát bài đó
+    li.addEventListener('click', () => loadTrack(index, true));
+    playlistEl.appendChild(li);
+  });
+}
+
+// Nạp 1 bài hát vào thẻ audio chính, autoPlay = true thì phát luôn
+function loadTrack(index, autoPlay){
+  if(index < 0 || index >= playlist.length) return;
+  currentTrackIndex = index;
+  const track = playlist[index];
+
+  mainAudio.src = track.src;
+  trackNameEl.textContent = track.name;
+  trackSubEl.textContent = "Đang nạp: " + track.src;
+
+  renderPlaylist();
+
+  if(autoPlay){
+    mainAudio.play().catch(() => {
+      // Nếu file không tồn tại thực tế (giả lập) thì báo cho người dùng biết
+      trackSubEl.textContent = "Không tìm thấy file: " + track.src + " (hãy Import file thật)";
+    });
+  }
+}
+
+// Nút PLAY / PAUSE
+btnPlay.addEventListener('click', () => {
+  if(currentTrackIndex === -1){
+    // Chưa chọn bài nào thì tự động phát bài đầu tiên trong playlist
+    if(playlist.length > 0) loadTrack(0, true);
+    return;
+  }
+  if(mainAudio.paused){
+    mainAudio.play().catch(()=>{
+      trackSubEl.textContent = "Không phát được file (file giả lập chưa tồn tại)";
+    });
+  } else {
+    mainAudio.pause();
+  }
+});
+
+// Nút STOP: dim (giảm dần âm lượng) trong 0.5s rồi mới dừng hẳn, đưa về 0
+btnStop.addEventListener('click', () => {
+  if(mainAudio.paused){
+    // Đang không phát -> chỉ cần đưa về đầu ngay, không cần dim
+    mainAudio.currentTime = 0;
+    progressBar.value = 0;
+    currentTimeEl.textContent = "00:00";
+    return;
+  }
+  fadeOutAndStop(mainAudio, 500, () => {
+    mainAudio.volume = parseFloat(volumeBar.value); // khôi phục theo thanh âm lượng
+    updatePlayButtonUI();
+    progressBar.value = 0;
+    currentTimeEl.textContent = "00:00";
+  });
+});
+
+// Nút LOOP: bật/tắt lặp lại bài hiện tại
+btnLoop.addEventListener('click', () => {
+  mainAudio.loop = !mainAudio.loop;
+  btnLoop.classList.toggle('loop-on', mainAudio.loop);
+});
+
+// Cập nhật icon nút Play theo trạng thái audio
+function updatePlayButtonUI(){
+  if(mainAudio.paused){
+    btnPlay.textContent = '▶';
+    btnPlay.classList.remove('active-glow');
+  } else {
+    btnPlay.textContent = '⏸';
+    btnPlay.classList.add('active-glow');
+  }
+}
+mainAudio.addEventListener('play', updatePlayButtonUI);
+mainAudio.addEventListener('pause', updatePlayButtonUI);
+
+// Khi có metadata (biết được tổng thời lượng bài hát)
+mainAudio.addEventListener('loadedmetadata', () => {
+  progressBar.max = mainAudio.duration || 0;
+  durationTimeEl.textContent = formatTime(mainAudio.duration);
+});
+
+// Cập nhật thanh tiến trình khi nhạc đang chạy
+mainAudio.addEventListener('timeupdate', () => {
+  if(isSeeking) return; // Không ghi đè khi người dùng đang kéo tay
+  progressBar.value = mainAudio.currentTime;
+  currentTimeEl.textContent = formatTime(mainAudio.currentTime);
+});
+
+// Khi bài hát kết thúc tự nhiên (không loop) -> tự chuyển bài kế tiếp
+mainAudio.addEventListener('ended', () => {
+  if(!mainAudio.loop){
+    const nextIndex = (currentTrackIndex + 1) % playlist.length;
+    loadTrack(nextIndex, true);
+  }
+});
+
+// Kéo thanh tiến trình để tua nhạc
+progressBar.addEventListener('input', () => {
+  isSeeking = true;
+  currentTimeEl.textContent = formatTime(progressBar.value);
+});
+progressBar.addEventListener('change', () => {
+  mainAudio.currentTime = progressBar.value;
+  isSeeking = false;
+});
+
+// Điều chỉnh âm lượng nhạc nền
+volumeBar.addEventListener('input', () => {
+  mainAudio.volume = volumeBar.value;
+});
+mainAudio.volume = volumeBar.value;
+
+// Tính năng Tải nhạc lên (Import file mp3 từ máy) -> thêm vào Playlist
+uploadInput.addEventListener('change', (e) => {
+  const files = Array.from(e.target.files);
+  files.forEach(file => {
+    const objectUrl = URL.createObjectURL(file); // Tạo URL tạm để phát file cục bộ
+    playlist.push({ name: file.name.replace(/\.[^/.]+$/, ""), src: objectUrl, tag: "Đã tải lên" });
+  });
+  renderPlaylist();
+  // Tự động phát bài vừa tải lên cuối cùng
+  if(files.length > 0){
+    loadTrack(playlist.length - 1, true);
+  }
+  uploadInput.value = ''; // reset input để có thể chọn lại cùng file lần sau
+});
+
+// Khởi tạo giao diện Playlist ban đầu
+renderPlaylist();
+
+
+/* ---------------------------------------------------------------------- */
+/* PHẦN 2: DJ SOUND PAD                                                     */
+/* ---------------------------------------------------------------------- */
+
+// Dữ liệu các nút Pad mặc định: tên hiển thị, file mặc định, icon, màu LED.
+// Gộp chung tất cả trong 1 lưới duy nhất (không chia tab) để nhìn thấy hết
+// và bấm nhanh khi đang chạy sự kiện. Muốn đổi âm thanh thì dùng nút
+// "Đổi âm thanh" ngay dưới mỗi pad để nạp file khác từ máy (không ảnh hưởng
+// tới Playlist nhạc nền bên Music Player).
+//
+// Nhóm 1 (pad 1-10): hiệu ứng âm thanh nhanh cho sự kiện.
+// Nhóm 2 (pad 11-15): các đoạn nhạc phục vụ MC dẫn chương trình - mời lên
+// sân khấu, giới thiệu đại biểu, mời phát biểu... khác với nhạc nền chạy
+// xuyên suốt (nhạc nền nằm ở Playlist bên Music Player).
+const padData = [
+  { id: 'pad1',  label: 'Vỗ tay',              icon: '👏', file: 'vo_tay.mp3',              color: '#00fff2' },
+  { id: 'pad2',  label: 'Còi hú DJ',           icon: '📯', file: 'coi_hu.mp3',              color: '#ff2ec4' },
+  { id: 'pad3',  label: 'Nhạc hồi hộp',        icon: '⏳', file: 'hoi_hop.mp3',             color: '#b026ff' },
+  { id: 'pad4',  label: 'Nhạc chiến thắng',    icon: '🏆', file: 'chien_thang.mp3',         color: '#f7ff00' },
+  { id: 'pad5',  label: 'Tiếng cười',          icon: '😂', file: 'tieng_cuoi.mp3',          color: '#00ff8c' },
+  { id: 'pad6',  label: 'Xịt keo',             icon: '🎉', file: 'xit_keo.mp3',             color: '#ff7a00' },
+  { id: 'pad7',  label: 'Đếm ngược',           icon: '⏱️', file: 'dem_nguoc.mp3',           color: '#00fff2' },
+  { id: 'pad8',  label: 'Pháo hoa',            icon: '🎆', file: 'phao_hoa.mp3',            color: '#ff2ec4' },
+  { id: 'pad9',  label: 'Tiếng chuông',        icon: '🔔', file: 'chuong.mp3',              color: '#b026ff' },
+  { id: 'pad10', label: 'Còi xe',              icon: '📢', file: 'coi_xe.mp3',              color: '#f7ff00' },
+  { id: 'pad11', label: 'Mời lên sân khấu',    icon: '🎤', file: 'len_san_khau.mp3',        color: '#00ff8c' },
+  { id: 'pad12', label: 'Giới thiệu đại biểu', icon: '👔', file: 'gioi_thieu_dai_bieu.mp3', color: '#ff7a00' },
+  { id: 'pad13', label: 'Nhạc dẫn MC',         icon: '🎙️', file: 'nhac_mc.mp3',             color: '#00fff2' },
+  { id: 'pad14', label: 'Mời phát biểu',       icon: '📣', file: 'moi_phat_bieu.mp3',       color: '#ff2ec4' },
+  { id: 'pad15', label: 'Cảm ơn - Kết',        icon: '🙏', file: 'cam_on.mp3',              color: '#b026ff' }
+];
+
+// Lưu trữ trạng thái từng pad: đối tượng Audio + tên file hiện tại
+const padState = {}; // { pad1: { audio: Audio, fileName: 'vo_tay.mp3' }, ... }
+
+// Danh sách phím tắt gán theo đúng thứ tự Pad (bố trí như bàn phím DJ:
+// hàng số 1-9,0 rồi tới các hàng chữ). Để dư nhiều phím vì "Thêm nhiều Pad"
+// có thể tạo pad mới vượt quá 15 pad ban đầu.
+const padShortcuts = [
+  '1','2','3','4','5','6','7','8','9','0',
+  'Q','W','E','R','T','Y','U','I','O','P',
+  'A','S','D','F','G','H','J','K','L',
+  'Z','X','C','V','B','N','M'
+];
+
+// Bảng màu neon dùng để tô cho các pad MỚI được thêm qua "Thêm nhiều Pad"
+const neonPalette = ['#00fff2', '#ff2ec4', '#b026ff', '#f7ff00', '#00ff8c', '#ff7a00'];
+
+const padGrid = document.getElementById('pad-grid');
+const nowPlayingListEl = document.getElementById('now-playing-list');
+
+// Vẽ lại thanh "Đang phát" cố định phía dưới: liệt kê mọi Pad đang chạy
+// dạng chip, mỗi chip có nút ✕ để dừng ngay pad đó. Hàm này được gọi lại
+// mỗi khi có Pad bắt đầu phát / dừng / đổi âm thanh, để luôn đúng thực tế.
+function updateNowPlayingList(){
+  const playingPads = padData.filter(pad => padState[pad.id] && !padState[pad.id].audio.paused);
+
+  if(playingPads.length === 0){
+    nowPlayingListEl.innerHTML = '<span class="now-playing-empty">Không có gì đang phát</span>';
+    return;
+  }
+
+  nowPlayingListEl.innerHTML = '';
+  playingPads.forEach(pad => {
+    const chip = document.createElement('span');
+    chip.className = 'now-playing-chip';
+    chip.innerHTML = `<span>${pad.icon} ${pad.label}</span><button class="np-stop" title="Dừng ngay pad này">✕</button>`;
+    chip.querySelector('.np-stop').addEventListener('click', () => {
+      // Bấm lại đúng nút Pad đó để dùng chung logic toggle (đang phát -> dừng)
+      const btn = document.getElementById('btn-' + pad.id);
+      if(btn) btn.click();
+    });
+    nowPlayingListEl.appendChild(chip);
+  });
+}
+
+// Gán 1 file âm thanh mới cho 1 pad (dùng chung cho cả đổi từng pad lẻ
+// và tải hàng loạt nhiều pad cùng lúc). Không đổi tên/icon của pad,
+// chỉ thay nội dung âm thanh bên trong.
+function setPadSound(pad, file){
+  const state = padState[pad.id];
+  const btn = document.getElementById('btn-' + pad.id);
+  const currentFileEl = document.getElementById('current-' + pad.id);
+  if(!state || !btn || !currentFileEl) return;
+
+  // Dừng âm thanh cũ nếu đang phát trước khi thay file mới
+  state.audio.pause();
+  btn.classList.remove('playing');
+
+  const objectUrl = URL.createObjectURL(file);
+  state.audio = new Audio(objectUrl);
+  state.fileName = file.name;
+  currentFileEl.textContent = file.name;
+
+  // Gắn lại sự kiện 'ended' cho audio mới
+  state.audio.addEventListener('ended', () => {
+    btn.classList.remove('playing');
+    updateNowPlayingList();
+  });
+
+  updateNowPlayingList(); // Pad vừa đổi nhạc có thể vừa bị dừng -> cập nhật lại thanh "Đang phát"
+}
+
+// Tạo DOM + gắn toàn bộ sự kiện cho 1 pad (dùng chung cho lần vẽ đầu tiên
+// VÀ khi thêm pad mới qua "Thêm nhiều Pad" sau này). Chỉ tạo/append phần tử
+// của riêng pad này - không đụng tới các pad khác đang có trên lưới.
+function createPadElement(pad, index){
+  // Tạo đối tượng Audio riêng cho pad (phát song song với nhạc nền)
+  const audio = pad.file ? new Audio(pad.file) : new Audio();
+  padState[pad.id] = { audio: audio, fileName: pad.file };
+
+  const shortcutKey = padShortcuts[index] || '';
+
+  const cell = document.createElement('div');
+  cell.className = 'pad-cell';
+  cell.innerHTML = `
+    <button class="pad-btn" id="btn-${pad.id}" style="--pad-color:${pad.color}">
+      ${shortcutKey ? `<span class="pad-key">${shortcutKey}</span>` : ''}
+      <span class="pad-icon">${pad.icon}</span>
+      <span class="pad-label">${pad.label}</span>
+    </button>
+    <div class="pad-file-row">
+      <label class="pad-file-label" for="file-${pad.id}">🔄 Đổi âm thanh</label>
+      <input type="file" class="pad-file-input" id="file-${pad.id}" accept="audio/*">
+    </div>
+    <div class="pad-current-file" id="current-${pad.id}">${pad.file ? pad.file : 'Chưa có âm thanh'}</div>
+  `;
+
+  const btn = cell.querySelector(`#btn-${pad.id}`);
+  const fileInput = cell.querySelector(`#file-${pad.id}`);
+  const currentFileEl = cell.querySelector(`#current-${pad.id}`);
+
+  // Bấm vào Pad: phát nếu đang dừng, dừng nếu đang phát (toggle)
+  btn.addEventListener('click', () => {
+    const state = padState[pad.id];
+    const a = state.audio;
+
+    if(a.paused){
+      // Phát từ đầu, không ảnh hưởng tới nhạc nền hay các pad khác
+      a.currentTime = 0;
+      a.play().catch(() => {
+        currentFileEl.textContent = "Không tìm thấy: " + state.fileName;
+      });
+      btn.classList.add('playing');
+    } else {
+      // Đang chạy -> bấm lại để dừng: dim (giảm dần âm lượng) 0.5s rồi mới tắt hẳn
+      const originalVolume = a.volume;
+      fadeOutAndStop(a, 500, () => {
+        a.volume = originalVolume;
+        btn.classList.remove('playing');
+        updateNowPlayingList();
+      });
+    }
+    updateNowPlayingList(); // Cập nhật ngay thanh "Đang phát" phía dưới
+  });
+
+  // Khi âm thanh Pad tự kết thúc -> tắt hiệu ứng LED glow
+  audio.addEventListener('ended', () => {
+    btn.classList.remove('playing');
+    updateNowPlayingList();
+  });
+
+  // Tính năng đổi file âm thanh cho từng Pad (Import / Custom)
+  fileInput.addEventListener('click', (e) => {
+    e.stopPropagation(); // Không cho sự kiện nổi bọt lên nút Pad
+  });
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    setPadSound(pad, file);
+    fileInput.value = '';
+  });
+
+  return cell;
+}
+
+// Render toàn bộ nút Pad ra giao diện (gộp chung 1 lưới, không chia tab)
+function renderPads(){
+  padGrid.innerHTML = '';
+  padData.forEach((pad, index) => {
+    padGrid.appendChild(createPadElement(pad, index));
+  });
+}
+
+renderPads();
+updateNowPlayingList(); // Khởi tạo thanh "Đang phát" (ban đầu chưa có gì chạy)
+
+// Nút "Dừng tất cả Pad": tắt nhanh mọi âm thanh Pad đang chạy cùng lúc
+const stopAllBtn = document.getElementById('btn-stop-all-pads');
+stopAllBtn.addEventListener('click', () => {
+  Object.keys(padState).forEach(id => {
+    const state = padState[id];
+    const btn = document.getElementById('btn-' + id);
+    if(!state.audio.paused){
+      // Đang phát -> dim (giảm dần âm lượng) 0.5s rồi mới tắt hẳn
+      const originalVolume = state.audio.volume;
+      fadeOutAndStop(state.audio, 500, () => {
+        state.audio.volume = originalVolume;
+        if(btn) btn.classList.remove('playing');
+        updateNowPlayingList();
+      });
+    } else {
+      state.audio.currentTime = 0;
+    }
+  });
+  updateNowPlayingList();
+});
+
+// Tính năng "Thêm nhiều Pad cùng lúc": chọn nhiều file 1 lần -> mỗi file
+// tạo ra 1 PAD MỚI nối tiếp phía dưới các pad hiện có (KHÔNG ghi đè pad cũ).
+const bulkPadInput = document.getElementById('bulk-pad-upload');
+const bulkStatusEl = document.getElementById('bulk-status');
+bulkPadInput.addEventListener('change', (e) => {
+  const files = Array.from(e.target.files);
+  if(files.length === 0) return;
+
+  const firstNewNumber = padData.length + 1;
+  let lastCell = null;
+
+  files.forEach(file => {
+    const newIndex = padData.length; // Vị trí mới = cuối danh sách hiện tại
+    const newPad = {
+      id: 'pad' + (newIndex + 1),
+      label: file.name.replace(/\.[^/.]+$/, ""), // Tên pad lấy theo tên file
+      icon: '🎵',
+      file: null, // Sẽ gán âm thanh thật ngay bên dưới bằng setPadSound
+      color: neonPalette[newIndex % neonPalette.length]
+    };
+    padData.push(newPad); // Thêm vào cuối mảng, không đụng tới pad cũ
+
+    const cell = createPadElement(newPad, newIndex);
+    padGrid.appendChild(cell); // Nối thêm xuống dưới lưới, không đè pad đang có
+    setPadSound(newPad, file); // Gán đúng file âm thanh vừa chọn cho pad mới này
+    lastCell = cell;
+  });
+
+  bulkStatusEl.textContent = `Đã thêm ${files.length} pad mới (Pad ${firstNewNumber} -> Pad ${padData.length}).`;
+  // Cuộn tới pad mới thêm cuối cùng để người dùng thấy ngay kết quả
+  if(lastCell) lastCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Tự xoá thông báo sau vài giây cho gọn giao diện
+  setTimeout(() => { bulkStatusEl.textContent = ''; }, 6000);
+
+  bulkPadInput.value = '';
+});
+
+// Phím tắt bàn phím cho Pad: bấm phím tương ứng = bấm nút Pad đó
+document.addEventListener('keydown', (e) => {
+  // Bỏ qua khi người dùng đang gõ chữ vào ô nhập liệu (tránh xung đột)
+  const ae = document.activeElement;
+  const isTyping = ae && (
+    ae.tagName === 'TEXTAREA' ||
+    (ae.tagName === 'INPUT' && !['range','checkbox','radio','file','button'].includes(ae.type))
+  );
+  if(isTyping) return;
+
+  const key = e.key.toUpperCase();
+  const index = padShortcuts.indexOf(key);
+  if(index === -1) return;
+
+  const pad = padData[index];
+  if(!pad) return;
+
+  const btn = document.getElementById('btn-' + pad.id);
+  if(btn){
+    btn.click(); // Giả lập bấm nút Pad tương ứng (dùng lại đúng logic toggle)
+    e.preventDefault();
+  }
+});
+
+</script>
+</body>
+</html>

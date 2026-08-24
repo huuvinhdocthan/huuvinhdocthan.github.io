@@ -3,619 +3,276 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EVENT MUSIC CENTER // ZINH DOAN - AVL - NETWORK </title>
-<link rel="stylesheet" href="style.css">
+<title>Zinh Doan ~ AVL ~ Sound and Event Tool</title>
+<meta name="description" content="Bộ công cụ kỹ thuật Âm thanh - Ánh sáng - Sự kiện: sơ đồ LED, soundboard, đếm ngược thuyết trình, tính DMX, tính điện, kịch bản chương trình — thực hiện bởi Zinh Doan, Freelancer AVL.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-label%3D%22Slice%20LED%20logo%22%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23ef4444%22/%3E%3Crect%20x%3D%2217%22%20y%3D%221%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%2310b981%22/%3E%3Crect%20x%3D%221%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%233b82f6%22/%3E%3Crect%20x%3D%2217%22%20y%3D%2217%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%223%22%20fill%3D%22%23f59e0b%22/%3E%3C/svg%3E">
+<script>
+/* Áp theme đã lưu (nếu có) trước khi CSS vẽ ra, tránh nháy sai theme.
+   Chưa chọn gì thì mặc định theo theme sáng/tối của hệ điều hành. */
+try{
+  var _t = localStorage.getItem('avltools-theme');
+  if(_t === 'light' || _t === 'dark') document.documentElement.setAttribute('data-theme', _t);
+}catch(e){}
+</script>
+<style>
+:root{
+  --bg:#f2f4f8; --panel:#ffffff; --panel2:#f7f9fc; --line:#dde2ea;
+  --txt:#141922; --dim:#5d6675; --dim2:#8d97a6;
+  --accent:#0e7c66; --amber:#b45309; --red:#dc2626;
+  --chip-bg:#eaf3f0; --chip-border:#cfe3dc;
+  --shadow:0 1px 2px rgba(20,25,34,.05), 0 8px 24px -12px rgba(20,25,34,.18);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e0e11; --panel:#17171c; --panel2:#1d1d23; --line:#2b2b33;
+    --txt:#ececed; --dim:#9498a3; --dim2:#6b6e78;
+    --accent:#2dd4bf; --amber:#f59e0b; --red:#ef4444;
+    --chip-bg:#0f2b25; --chip-border:#1c4a3d;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e0e11; --panel:#17171c; --panel2:#1d1d23; --line:#2b2b33;
+  --txt:#ececed; --dim:#9498a3; --dim2:#6b6e78;
+  --accent:#2dd4bf; --amber:#f59e0b; --red:#ef4444;
+  --chip-bg:#0f2b25; --chip-border:#1c4a3d;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--txt); padding:18px;
+  font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; font-size:14px;
+}
+a{color:inherit}
+.wrap{max-width:1800px;margin:0 auto}
+
+.topbar{display:flex;align-items:center;gap:12px;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;box-shadow:var(--shadow);margin-bottom:18px}
+.topbar .logo{width:34px;height:34px;flex:0 0 auto;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px rgba(20,25,34,.15)}
+.topbar .logo svg{display:block;width:100%;height:100%}
+.topbar .brand-name{font-size:15px;font-weight:700;letter-spacing:.01em;line-height:1.2}
+.topbar .brand-sub{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.topbar .right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.topbar .gh{font-size:12px;color:var(--dim);text-decoration:none;
+  border:1px solid var(--line);border-radius:8px;padding:6px 12px;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.topbar .gh:hover{background:var(--panel2);color:var(--txt);border-color:var(--dim2)}
+.theme-toggle{display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;flex:0 0 auto;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--dim);cursor:pointer}
+.theme-toggle:hover{color:var(--txt);border-color:var(--dim2);background:var(--panel2)}
+.theme-toggle svg{width:16px;height:16px}
+.theme-toggle .i-sun{display:block}
+.theme-toggle .i-moon{display:none}
+:root[data-theme="dark"] .theme-toggle .i-sun{display:none}
+:root[data-theme="dark"] .theme-toggle .i-moon{display:block}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .theme-toggle .i-sun{display:none}
+  :root:not([data-theme="light"]) .theme-toggle .i-moon{display:block}
+}
+
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:32px 28px;
+  box-shadow:var(--shadow);margin-bottom:22px}
+.hero h1{font-size:24px;letter-spacing:-.01em;margin-bottom:8px}
+.hero p{color:var(--dim);font-size:14px;max-width:64ch;line-height:1.6}
+
+.section-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:28px 0 12px 2px}
+.section-label:first-of-type{margin-top:0}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.tool{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:20px;box-shadow:var(--shadow);text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.tool:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(20,25,34,.06), 0 14px 28px -14px rgba(20,25,34,.24)}
+.tool .icon{width:44px;height:44px;border-radius:10px;overflow:hidden;margin-bottom:14px;
+  box-shadow:0 1px 2px rgba(20,25,34,.15);background:var(--panel2);display:flex;align-items:center;justify-content:center}
+.tool .icon svg{display:block;width:100%;height:100%}
+.tool h2{font-size:16px;margin-bottom:6px}
+.tool p{font-size:12.5px;color:var(--dim);line-height:1.55;flex:1}
+.tool .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.tool .tag{font-size:10.5px;color:var(--accent);background:var(--chip-bg);border:1px solid var(--chip-border);
+  border-radius:5px;padding:3px 7px;font-weight:500}
+.tool .open{margin-top:14px;font-size:12.5px;font-weight:600;color:var(--accent)}
+
+.tool.soon{cursor:default;opacity:.82}
+.tool.soon:hover{transform:none;box-shadow:var(--shadow)}
+.tool.soon .icon{filter:grayscale(35%)}
+.tool.soon .badge{margin-top:14px;font-size:10.5px;font-weight:600;color:var(--dim2);
+  text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:6px}
+.tool.soon .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--dim2)}
+
+.credit{max-width:1800px;margin:28px auto 4px;text-align:center;font-size:11px;color:var(--dim2);
+  padding-top:14px;border-top:1px solid var(--line)}
+.credit b{color:var(--dim)}
+.credit a{color:var(--accent);text-decoration:none}
+.credit a:hover{text-decoration:underline}
+</style>
 </head>
 <body>
-
-<!-- Nút chuyển giao diện Sáng / Tối -->
-<button id="theme-toggle" class="theme-toggle-btn" title="Chuyển giao diện Sáng / Tối">🌙</button>
-
 <div class="wrap">
-  <header>
-    <h1>ZIT-Event Music <span>Center</span></h1>
-    <p>Dark Mode // Cyberpunk DJ Console For Event</p>
+
+  <header class="topbar">
+    <div class="logo"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AVL Tools logo"><rect x="1" y="1" width="14" height="14" rx="3" fill="#ef4444"/><rect x="17" y="1" width="14" height="14" rx="3" fill="#10b981"/><rect x="1" y="17" width="14" height="14" rx="3" fill="#3b82f6"/><rect x="17" y="17" width="14" height="14" rx="3" fill="#f59e0b"/></svg></div>
+    <div>
+      <div class="brand-name">Zinh Doan ~ AVL ~ Sound and Event Tool</div>
+      <div class="brand-sub">Bộ công cụ kỹ thuật Âm thanh · Ánh sáng · Sự kiện</div>
+    </div>
+    <div class="right">
+      <button type="button" class="theme-toggle" id="theme-toggle" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng/tối">
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 1 0 20.354 15.354Z"/></svg>
+      </button>
+      <a class="gh" href="https://github.com/huuvinhdocthan/mapLed" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01
+          1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+          0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68
+          0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0
+          3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01
+          8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        GitHub
+      </a>
+    </div>
   </header>
 
-  <div class="main-grid">
+  <section class="hero">
+    <h1>Zinh Doan ~ AVL ~ Sound and Event Tool</h1>
+    <p>Bộ công cụ web chạy offline (không cần cài đặt, không cần server) phục vụ công việc kỹ thuật Âm thanh - Ánh sáng - Sự kiện: dựng sơ đồ LED cho Resolume, phát nhạc sự kiện, đếm ngược thời gian thuyết trình, tính địa chỉ DMX, tính công suất điện và quản lý kịch bản chương trình.</p>
+  </section>
 
-    <!-- ===================== PHẦN 1: MUSIC PLAYER ===================== -->
-    <section class="panel" id="panel-player">
-      <div class="panel-title"><span class="dot"></span> Music Player - Nhạc nền sự kiện</div>
+  <div class="section-label">Đang dùng được</div>
+  <div class="grid">
 
-      <div id="now-playing">
-        <div class="track-name" id="track-name">Chưa chọn bài hát</div>
-        <div class="track-sub" id="track-sub">Chọn 1 bài trong Playlist bên dưới</div>
+    <a class="tool" href="mapping_led.html">
+      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="14" height="14" rx="3" fill="#ef4444"/><rect x="17" y="1" width="14" height="14" rx="3" fill="#10b981"/><rect x="1" y="17" width="14" height="14" rx="3" fill="#3b82f6"/><rect x="17" y="17" width="14" height="14" rx="3" fill="#f59e0b"/></svg></div>
+      <h2>LED Slice Mapper</h2>
+      <p>Sắp xếp các slice LED, tự tính Width/Height Composition cho Resolume, kéo thả & snap dính cạnh, xoay góc tự do, cắt hình tròn/đa giác tùy chỉnh, xuất ảnh test pattern PNG 1:1.</p>
+      <div class="tags">
+        <span class="tag">Resolume</span>
+        <span class="tag">Composition</span>
+        <span class="tag">Test pattern</span>
       </div>
+      <div class="open">Mở công cụ →</div>
+    </a>
 
-      <div class="progress-area">
-        <div class="progress-times">
-          <span id="current-time">00:00</span>
-          <span id="duration-time">00:00</span>
-        </div>
-        <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
+    <a class="tool" href="soundboard.html">
+      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="12" width="4" height="8" rx="2" fill="#8b5cf6"/><rect x="9" y="6" width="4" height="20" rx="2" fill="#8b5cf6"/><rect x="16" y="2" width="4" height="28" rx="2" fill="#8b5cf6"/><rect x="23" y="8" width="4" height="16" rx="2" fill="#8b5cf6"/></svg></div>
+      <h2>Soundboard sự kiện</h2>
+      <p>Kéo thả file nhạc/hiệu ứng vào trang, gán phím tắt phát tức thì, fade in/out khi chuyển bài, playlist tự chuyển bài kế tiếp, và nút Panic/Fade Out All để xử lý gấp khi đang live.</p>
+      <div class="tags">
+        <span class="tag">Soundboard</span>
+        <span class="tag">Phím tắt</span>
+        <span class="tag">Fade</span>
       </div>
+      <div class="open">Mở công cụ →</div>
+    </a>
 
-      <div class="controls-row">
-        <button class="ctrl-btn" id="btn-stop" title="Dừng hẳn">⏹</button>
-        <button class="ctrl-btn big" id="btn-play" title="Phát / Tạm dừng">▶</button>
-        <button class="ctrl-btn" id="btn-loop" title="Lặp lại bài hiện tại">🔁</button>
+    <a class="tool" href="countdown.html">
+      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="17" r="13" fill="none" stroke="#16a34a" stroke-width="3"/>
+        <path d="M16 9 V17 L22 20" stroke="#16a34a" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <rect x="12" y="1" width="8" height="3" rx="1.5" fill="#16a34a"/>
+      </svg></div>
+      <h2>Đếm ngược sự kiện</h2>
+      <p>Đồng hồ đếm ngược cho MC/diễn giả khi thuyết trình PPT — cảnh báo vàng/đỏ, tự chuyển sang đếm vượt giờ khi hết, chế độ trình chiếu toàn màn hình, có âm thanh cảnh báo.</p>
+      <div class="tags">
+        <span class="tag">Presentation Timer</span>
+        <span class="tag">Trình chiếu</span>
       </div>
+      <div class="open">Mở công cụ →</div>
+    </a>
 
-      <div class="volume-row">
-        <span>🔊</span>
-        <input type="range" id="volume-bar" min="0" max="1" step="0.01" value="0.8">
+    <a class="tool" href="dmx_calculator.html">
+      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="4" width="4" height="24" rx="2" fill="#f59e0b" opacity=".25"/>
+        <rect x="2" y="18" width="8" height="5" rx="2" fill="#f59e0b"/>
+        <rect x="14" y="4" width="4" height="24" rx="2" fill="#f59e0b" opacity=".25"/>
+        <rect x="12" y="8" width="8" height="5" rx="2" fill="#f59e0b"/>
+        <rect x="24" y="4" width="4" height="24" rx="2" fill="#f59e0b" opacity=".25"/>
+        <rect x="22" y="14" width="8" height="5" rx="2" fill="#f59e0b"/>
+      </svg></div>
+      <h2>DMX Calculator</h2>
+      <p>Nhập số lượng đèn và số kênh (channel) mỗi đèn, tự động tính địa chỉ DMX bắt đầu cho từng đèn, tự chia sang Universe kế tiếp khi vượt 512 kênh, cảnh báo trùng địa chỉ, bản đồ kênh trực quan và xuất patch list .txt.</p>
+      <div class="tags">
+        <span class="tag">DMX 512</span>
+        <span class="tag">Địa chỉ đèn</span>
+        <span class="tag">Patch list</span>
       </div>
+      <div class="open">Mở công cụ →</div>
+    </a>
 
-      <div class="upload-box">
-        <label class="upload-label" for="upload-music">+ Tải nhạc lên (.mp3)</label>
-        <input type="file" id="upload-music" accept="audio/*" multiple>
+    <a class="tool" href="power_calculator.html">
+      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M18 2 L6 18 H14 L12 30 L27 12 H18 Z" fill="#ef4444"/></svg></div>
+      <h2>Power Calculator</h2>
+      <p>Nhập số lượng và công suất (Watt) từng loại thiết bị, tự động cộng tổng và quy đổi ra dòng điện (Ampere) theo pha/điện áp, cảnh báo lệch tải giữa các pha, gợi ý CB &amp; tiết diện dây, xuất báo cáo .txt.</p>
+      <div class="tags">
+        <span class="tag">Watt → Ampere</span>
+        <span class="tag">Cân tải 3 pha</span>
+        <span class="tag">CB &amp; dây dẫn</span>
       </div>
+      <div class="open">Mở công cụ →</div>
+    </a>
 
-      <ul class="playlist" id="playlist"></ul>
-    </section>
-
-    <!-- ===================== PHẦN 2: DJ SOUND PAD ===================== -->
-    <section class="panel" id="panel-pad">
-      <div class="panel-title">
-        <span class="dot"></span> DJ Sound Pad - Hiệu ứng nhanh
-        <button id="btn-stop-all-pads" class="stop-all-btn" title="Dừng tất cả âm thanh Pad đang chạy">⏹ Dừng tất cả</button>
+    <a class="tool" href="pad_play_music_2.html">
+      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="12" height="12" rx="3" fill="#00cfc7"/><rect x="18" y="2" width="12" height="12" rx="3" fill="#e0159e"/><rect x="2" y="18" width="12" height="12" rx="3" fill="#8b5cf6"/><rect x="18" y="18" width="12" height="12" rx="3" fill="#caa300"/></svg></div>
+      <h2>Pad Play Music 2</h2>
+      <p>Music Player nhạc nền tự chuyển bài + DJ Sound Pad 15 nút hiệu ứng/nhạc dẫn MC, phím tắt bàn phím, thêm hàng loạt Pad cùng lúc, giao diện cyberpunk dark mode riêng.</p>
+      <div class="tags">
+        <span class="tag">Music Player</span>
+        <span class="tag">DJ Pad</span>
+        <span class="tag">Phím tắt</span>
       </div>
-
-      <!-- Thanh công cụ: thêm hàng loạt Pad mới cùng lúc -->
-      <div class="pad-toolbar">
-        <label class="pad-bulk-label" for="bulk-pad-upload">📂 Thêm nhiều Pad cùng lúc</label>
-        <input type="file" id="bulk-pad-upload" class="pad-file-input" accept="audio/*" multiple>
-        <span class="bulk-status" id="bulk-status"></span>
-      </div>
-
-      <p class="pad-hint">Pad 1-10: hiệu ứng nhanh. Pad 11-15: nhạc dẫn MC (mời lên sân khấu, giới thiệu đại biểu...). Bấm để phát, bấm lại để dừng — hoặc dùng phím tắt hiện trên mỗi pad. Dùng "Đổi âm thanh" dưới mỗi pad để thay 1 bài, hoặc "Thêm nhiều Pad cùng lúc" ở trên để nạp nhiều bài — mỗi file sẽ tạo 1 pad mới nối tiếp phía dưới, không ghi đè pad đang có.</p>
-
-      <div class="pad-grid" id="pad-grid">
-        <!-- Các nút Pad sẽ được JS render tự động vào đây -->
-      </div>
-    </section>
+      <div class="open">Mở công cụ →</div>
+    </a>
 
   </div>
 
-  <footer>Được xây dựng cho các sự kiện trực tiếp — <span>Bấm là chạy, không cần internet</span></footer>
-</div>
+  <div class="section-label">Sắp ra mắt</div>
+  <div class="grid">
 
-<!-- Thanh "Đang phát" cố định dưới màn hình: xem nhanh Pad nào đang chạy
-     và dừng ngay bằng nút ✕ trên từng chip, không cần dò tìm trong lưới Pad -->
-<div class="now-playing-bar">
-  <span class="np-label">🔊 Đang phát</span>
-  <div class="now-playing-list" id="now-playing-list">
-    <span class="now-playing-empty">Không có gì đang phát</span>
+    <div class="tool soon">
+      <div class="icon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="17" r="13" fill="none" stroke="#3b82f6" stroke-width="3"/>
+        <path d="M16 9 V17 L22 20" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <rect x="12" y="1" width="8" height="3" rx="1.5" fill="#3b82f6"/>
+      </svg></div>
+      <h2>Run of Show</h2>
+      <p>Bảng kịch bản chương trình sửa trực tiếp trên màn hình — thời gian, nội dung, người phụ trách — tự động đếm ngược đến tiết mục tiếp theo.</p>
+      <div class="tags">
+        <span class="tag">Kịch bản</span>
+        <span class="tag">Đếm ngược</span>
+      </div>
+      <div class="badge">Sắp ra mắt</div>
+    </div>
+
+    <!--
+      Khi 1 tool ở trên được làm xong: đổi <div class="tool soon"> thành <a class="tool" href="ten-file.html">,
+      thay khối <div class="badge">Sắp ra mắt</div> bằng <div class="open">Mở công cụ →</div>,
+      rồi cắt cả khối di chuyển lên nhóm "Đang dùng được" phía trên.
+    -->
+
   </div>
+
 </div>
 
-<!-- Thẻ audio ẩn dùng cho nhạc nền chính -->
-<audio id="main-audio" preload="metadata"></audio>
+<footer class="credit">
+  Công cụ được thực hiện bởi <b>Zinh Doan</b> · Freelancer AVL &nbsp;|&nbsp;
+  Gmail: <a href="mailto:Huuvinhit98@gmail.com">Huuvinhit98@gmail.com</a> &nbsp;|&nbsp;
+  SĐT: <a href="tel:0986416678">0986 416 678</a>
+  <div style="margin-top:6px;font-size:10px">© 2026 Zinh Doan. Bảo lưu mọi quyền — nghiêm cấm sao chép, phân phối lại hoặc sử dụng lại mã nguồn khi chưa có sự đồng ý bằng văn bản.</div>
+</footer>
 
 <script>
-/* ==========================================================================
-   EVENT MUSIC CENTER - JAVASCRIPT THUẦN (Không dùng thư viện ngoài)
-   Gồm 2 phần: (1) Music Player nhạc nền, (2) DJ Sound Pad hiệu ứng nhanh
-   ========================================================================== */
-
-/* ---------------------------------------------------------------------- */
-/* CHẾ ĐỘ SÁNG / TỐI (Theme Toggle)                                        */
-/* ---------------------------------------------------------------------- */
-const themeToggleBtn = document.getElementById('theme-toggle');
-
-// Xác định theme khi mở trang: ưu tiên lựa chọn đã lưu từ lần trước (nếu có)
-// -> nếu chưa từng chọn thì theo cài đặt Sáng/Tối của hệ điều hành/trình duyệt
-// -> nếu không xác định được thì mặc định là SÁNG.
-const savedTheme = localStorage.getItem('emc-theme');
-let useLightTheme;
-if(savedTheme === 'light' || savedTheme === 'dark'){
-  useLightTheme = (savedTheme === 'light');
-} else if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
-  useLightTheme = false; // Hệ thống đang đặt chế độ Tối -> theo Tối
-} else {
-  useLightTheme = true; // Không rõ / hệ thống đang Sáng -> mặc định SÁNG
+"use strict";
+function effectiveTheme(){
+  var explicit = document.documentElement.getAttribute('data-theme');
+  if(explicit === 'light' || explicit === 'dark') return explicit;
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
 }
-
-if(useLightTheme){
-  document.body.classList.add('theme-light');
-  themeToggleBtn.textContent = '☀️';
-} else {
-  themeToggleBtn.textContent = '🌙';
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  try{ localStorage.setItem('avltools-theme', t); }catch(e){}
 }
-
-themeToggleBtn.addEventListener('click', () => {
-  document.body.classList.toggle('theme-light');
-  const isLight = document.body.classList.contains('theme-light');
-  themeToggleBtn.textContent = isLight ? '☀️' : '🌙';
-  localStorage.setItem('emc-theme', isLight ? 'light' : 'dark');
-});
-
-
-/* ---------------------------------------------------------------------- */
-/* TIỆN ÍCH DÙNG CHUNG: DIM NHẠC TRƯỚC KHI DỪNG                             */
-/* ---------------------------------------------------------------------- */
-// Khi bấm DỪNG (nhạc nền hoặc Pad), âm lượng sẽ giảm dần (dim) trong 0.5s
-// thay vì cắt đột ngột, sau đó mới thực sự pause + đưa về đầu bài.
-function fadeOutAndStop(audio, duration, onDone){
-  duration = duration || 500;
-  const steps = 20;
-  const stepTime = duration / steps;
-  const startVolume = audio.volume;
-  let count = 0;
-
-  const timer = setInterval(() => {
-    count++;
-    audio.volume = Math.max(0, startVolume * (1 - count / steps));
-    if(count >= steps){
-      clearInterval(timer);
-      audio.pause();
-      audio.currentTime = 0;
-      audio.volume = startVolume; // khôi phục âm lượng gốc cho lần phát kế tiếp
-      if(onDone) onDone();
-    }
-  }, stepTime);
-}
-
-
-/* ---------------------------------------------------------------------- */
-/* PHẦN 1: MUSIC PLAYER                                                    */
-/* ---------------------------------------------------------------------- */
-
-// Danh sách phát giả lập ban đầu (10 bài nhạc sự kiện có sẵn tên file)
-// Lưu ý: đây là tên file giả lập, khi chạy thực tế cần đặt các file mp3
-// tương ứng cùng thư mục với file HTML này, hoặc người dùng tự Import.
-let playlist = [
-  { name: "Nhạc khai mạc",              src: "khai_mac.mp3",           tag: "Có sẵn" },
-  { name: "Nhạc nền sự kiện 1",         src: "nhac_nen_1.mp3",         tag: "Có sẵn" },
-  { name: "Nhạc nền sự kiện 2",         src: "nhac_nen_2.mp3",         tag: "Có sẵn" },
-  { name: "Nhạc nền sự kiện 3",         src: "nhac_nen_3.mp3",         tag: "Có sẵn" },
-  { name: "Nhạc nền sự kiện 4",         src: "nhac_nen_4.mp3",         tag: "Có sẵn" },
-  { name: "Nhạc nền sự kiện 5",         src: "nhac_nen_5.mp3",         tag: "Có sẵn" },
-  { name: "Nhạc chờ / đón khách",       src: "nhac_cho.mp3",           tag: "Có sẵn" },
-  { name: "Nhạc giữa chương trình",     src: "giua_chuong_trinh.mp3",  tag: "Có sẵn" },
-  { name: "Nhạc trao giải",             src: "trao_giai.mp3",          tag: "Có sẵn" },
-  { name: "Nhạc bế mạc",                src: "be_mac.mp3",             tag: "Có sẵn" }
-];
-
-let currentTrackIndex = -1; // Chưa chọn bài nào ban đầu
-let isSeeking = false;      // Cờ đánh dấu người dùng đang kéo thanh tiến trình
-
-const mainAudio     = document.getElementById('main-audio');
-const playlistEl    = document.getElementById('playlist');
-const trackNameEl   = document.getElementById('track-name');
-const trackSubEl    = document.getElementById('track-sub');
-const btnPlay        = document.getElementById('btn-play');
-const btnStop        = document.getElementById('btn-stop');
-const btnLoop         = document.getElementById('btn-loop');
-const progressBar    = document.getElementById('progress-bar');
-const currentTimeEl  = document.getElementById('current-time');
-const durationTimeEl = document.getElementById('duration-time');
-const volumeBar      = document.getElementById('volume-bar');
-const uploadInput    = document.getElementById('upload-music');
-
-// Định dạng giây -> mm:ss
-function formatTime(seconds){
-  if(!isFinite(seconds) || seconds < 0) seconds = 0;
-  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-  const s = Math.floor(seconds % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
-}
-
-// Vẽ lại toàn bộ danh sách Playlist ra giao diện
-function renderPlaylist(){
-  playlistEl.innerHTML = '';
-  playlist.forEach((track, index) => {
-    const li = document.createElement('li');
-    li.className = (index === currentTrackIndex) ? 'playing' : '';
-    li.innerHTML = `
-      <span class="track-index">${(index+1).toString().padStart(2,'0')}</span>
-      <span class="track-title">${track.name}</span>
-      <span class="track-tag">${track.tag}</span>
-    `;
-    // Bấm vào 1 bài trong playlist -> phát bài đó
-    li.addEventListener('click', () => loadTrack(index, true));
-    playlistEl.appendChild(li);
-  });
-}
-
-// Nạp 1 bài hát vào thẻ audio chính, autoPlay = true thì phát luôn
-function loadTrack(index, autoPlay){
-  if(index < 0 || index >= playlist.length) return;
-  currentTrackIndex = index;
-  const track = playlist[index];
-
-  mainAudio.src = track.src;
-  trackNameEl.textContent = track.name;
-  trackSubEl.textContent = "Đang nạp: " + track.src;
-
-  renderPlaylist();
-
-  if(autoPlay){
-    mainAudio.play().catch(() => {
-      // Nếu file không tồn tại thực tế (giả lập) thì báo cho người dùng biết
-      trackSubEl.textContent = "Không tìm thấy file: " + track.src + " (hãy Import file thật)";
-    });
-  }
-}
-
-// Nút PLAY / PAUSE
-btnPlay.addEventListener('click', () => {
-  if(currentTrackIndex === -1){
-    // Chưa chọn bài nào thì tự động phát bài đầu tiên trong playlist
-    if(playlist.length > 0) loadTrack(0, true);
-    return;
-  }
-  if(mainAudio.paused){
-    mainAudio.play().catch(()=>{
-      trackSubEl.textContent = "Không phát được file (file giả lập chưa tồn tại)";
-    });
-  } else {
-    mainAudio.pause();
-  }
-});
-
-// Nút STOP: dim (giảm dần âm lượng) trong 0.5s rồi mới dừng hẳn, đưa về 0
-btnStop.addEventListener('click', () => {
-  if(mainAudio.paused){
-    // Đang không phát -> chỉ cần đưa về đầu ngay, không cần dim
-    mainAudio.currentTime = 0;
-    progressBar.value = 0;
-    currentTimeEl.textContent = "00:00";
-    return;
-  }
-  fadeOutAndStop(mainAudio, 500, () => {
-    mainAudio.volume = parseFloat(volumeBar.value); // khôi phục theo thanh âm lượng
-    updatePlayButtonUI();
-    progressBar.value = 0;
-    currentTimeEl.textContent = "00:00";
-  });
-});
-
-// Nút LOOP: bật/tắt lặp lại bài hiện tại
-btnLoop.addEventListener('click', () => {
-  mainAudio.loop = !mainAudio.loop;
-  btnLoop.classList.toggle('loop-on', mainAudio.loop);
-});
-
-// Cập nhật icon nút Play theo trạng thái audio
-function updatePlayButtonUI(){
-  if(mainAudio.paused){
-    btnPlay.textContent = '▶';
-    btnPlay.classList.remove('active-glow');
-  } else {
-    btnPlay.textContent = '⏸';
-    btnPlay.classList.add('active-glow');
-  }
-}
-mainAudio.addEventListener('play', updatePlayButtonUI);
-mainAudio.addEventListener('pause', updatePlayButtonUI);
-
-// Khi có metadata (biết được tổng thời lượng bài hát)
-mainAudio.addEventListener('loadedmetadata', () => {
-  progressBar.max = mainAudio.duration || 0;
-  durationTimeEl.textContent = formatTime(mainAudio.duration);
-});
-
-// Cập nhật thanh tiến trình khi nhạc đang chạy
-mainAudio.addEventListener('timeupdate', () => {
-  if(isSeeking) return; // Không ghi đè khi người dùng đang kéo tay
-  progressBar.value = mainAudio.currentTime;
-  currentTimeEl.textContent = formatTime(mainAudio.currentTime);
-});
-
-// Khi bài hát kết thúc tự nhiên (không loop) -> tự chuyển bài kế tiếp
-mainAudio.addEventListener('ended', () => {
-  if(!mainAudio.loop){
-    const nextIndex = (currentTrackIndex + 1) % playlist.length;
-    loadTrack(nextIndex, true);
-  }
-});
-
-// Kéo thanh tiến trình để tua nhạc
-progressBar.addEventListener('input', () => {
-  isSeeking = true;
-  currentTimeEl.textContent = formatTime(progressBar.value);
-});
-progressBar.addEventListener('change', () => {
-  mainAudio.currentTime = progressBar.value;
-  isSeeking = false;
-});
-
-// Điều chỉnh âm lượng nhạc nền
-volumeBar.addEventListener('input', () => {
-  mainAudio.volume = volumeBar.value;
-});
-mainAudio.volume = volumeBar.value;
-
-// Tính năng Tải nhạc lên (Import file mp3 từ máy) -> thêm vào Playlist
-uploadInput.addEventListener('change', (e) => {
-  const files = Array.from(e.target.files);
-  files.forEach(file => {
-    const objectUrl = URL.createObjectURL(file); // Tạo URL tạm để phát file cục bộ
-    playlist.push({ name: file.name.replace(/\.[^/.]+$/, ""), src: objectUrl, tag: "Đã tải lên" });
-  });
-  renderPlaylist();
-  // Tự động phát bài vừa tải lên cuối cùng
-  if(files.length > 0){
-    loadTrack(playlist.length - 1, true);
-  }
-  uploadInput.value = ''; // reset input để có thể chọn lại cùng file lần sau
-});
-
-// Khởi tạo giao diện Playlist ban đầu
-renderPlaylist();
-
-
-/* ---------------------------------------------------------------------- */
-/* PHẦN 2: DJ SOUND PAD                                                     */
-/* ---------------------------------------------------------------------- */
-
-// Dữ liệu các nút Pad mặc định: tên hiển thị, file mặc định, icon, màu LED.
-// Gộp chung tất cả trong 1 lưới duy nhất (không chia tab) để nhìn thấy hết
-// và bấm nhanh khi đang chạy sự kiện. Muốn đổi âm thanh thì dùng nút
-// "Đổi âm thanh" ngay dưới mỗi pad để nạp file khác từ máy (không ảnh hưởng
-// tới Playlist nhạc nền bên Music Player).
-//
-// Nhóm 1 (pad 1-10): hiệu ứng âm thanh nhanh cho sự kiện.
-// Nhóm 2 (pad 11-15): các đoạn nhạc phục vụ MC dẫn chương trình - mời lên
-// sân khấu, giới thiệu đại biểu, mời phát biểu... khác với nhạc nền chạy
-// xuyên suốt (nhạc nền nằm ở Playlist bên Music Player).
-const padData = [
-  { id: 'pad1',  label: 'Vỗ tay',              icon: '👏', file: 'vo_tay.mp3',              color: '#00fff2' },
-  { id: 'pad2',  label: 'Còi hú DJ',           icon: '📯', file: 'coi_hu.mp3',              color: '#ff2ec4' },
-  { id: 'pad3',  label: 'Nhạc hồi hộp',        icon: '⏳', file: 'hoi_hop.mp3',             color: '#b026ff' },
-  { id: 'pad4',  label: 'Nhạc chiến thắng',    icon: '🏆', file: 'chien_thang.mp3',         color: '#f7ff00' },
-  { id: 'pad5',  label: 'Tiếng cười',          icon: '😂', file: 'tieng_cuoi.mp3',          color: '#00ff8c' },
-  { id: 'pad6',  label: 'Xịt keo',             icon: '🎉', file: 'xit_keo.mp3',             color: '#ff7a00' },
-  { id: 'pad7',  label: 'Đếm ngược',           icon: '⏱️', file: 'dem_nguoc.mp3',           color: '#00fff2' },
-  { id: 'pad8',  label: 'Pháo hoa',            icon: '🎆', file: 'phao_hoa.mp3',            color: '#ff2ec4' },
-  { id: 'pad9',  label: 'Tiếng chuông',        icon: '🔔', file: 'chuong.mp3',              color: '#b026ff' },
-  { id: 'pad10', label: 'Còi xe',              icon: '📢', file: 'coi_xe.mp3',              color: '#f7ff00' },
-  { id: 'pad11', label: 'Mời lên sân khấu',    icon: '🎤', file: 'len_san_khau.mp3',        color: '#00ff8c' },
-  { id: 'pad12', label: 'Giới thiệu đại biểu', icon: '👔', file: 'gioi_thieu_dai_bieu.mp3', color: '#ff7a00' },
-  { id: 'pad13', label: 'Nhạc dẫn MC',         icon: '🎙️', file: 'nhac_mc.mp3',             color: '#00fff2' },
-  { id: 'pad14', label: 'Mời phát biểu',       icon: '📣', file: 'moi_phat_bieu.mp3',       color: '#ff2ec4' },
-  { id: 'pad15', label: 'Cảm ơn - Kết',        icon: '🙏', file: 'cam_on.mp3',              color: '#b026ff' }
-];
-
-// Lưu trữ trạng thái từng pad: đối tượng Audio + tên file hiện tại
-const padState = {}; // { pad1: { audio: Audio, fileName: 'vo_tay.mp3' }, ... }
-
-// Danh sách phím tắt gán theo đúng thứ tự Pad (bố trí như bàn phím DJ:
-// hàng số 1-9,0 rồi tới các hàng chữ). Để dư nhiều phím vì "Thêm nhiều Pad"
-// có thể tạo pad mới vượt quá 15 pad ban đầu.
-const padShortcuts = [
-  '1','2','3','4','5','6','7','8','9','0',
-  'Q','W','E','R','T','Y','U','I','O','P',
-  'A','S','D','F','G','H','J','K','L',
-  'Z','X','C','V','B','N','M'
-];
-
-// Bảng màu neon dùng để tô cho các pad MỚI được thêm qua "Thêm nhiều Pad"
-const neonPalette = ['#00fff2', '#ff2ec4', '#b026ff', '#f7ff00', '#00ff8c', '#ff7a00'];
-
-const padGrid = document.getElementById('pad-grid');
-const nowPlayingListEl = document.getElementById('now-playing-list');
-
-// Vẽ lại thanh "Đang phát" cố định phía dưới: liệt kê mọi Pad đang chạy
-// dạng chip, mỗi chip có nút ✕ để dừng ngay pad đó. Hàm này được gọi lại
-// mỗi khi có Pad bắt đầu phát / dừng / đổi âm thanh, để luôn đúng thực tế.
-function updateNowPlayingList(){
-  const playingPads = padData.filter(pad => padState[pad.id] && !padState[pad.id].audio.paused);
-
-  if(playingPads.length === 0){
-    nowPlayingListEl.innerHTML = '<span class="now-playing-empty">Không có gì đang phát</span>';
-    return;
-  }
-
-  nowPlayingListEl.innerHTML = '';
-  playingPads.forEach(pad => {
-    const chip = document.createElement('span');
-    chip.className = 'now-playing-chip';
-    chip.innerHTML = `<span>${pad.icon} ${pad.label}</span><button class="np-stop" title="Dừng ngay pad này">✕</button>`;
-    chip.querySelector('.np-stop').addEventListener('click', () => {
-      // Bấm lại đúng nút Pad đó để dùng chung logic toggle (đang phát -> dừng)
-      const btn = document.getElementById('btn-' + pad.id);
-      if(btn) btn.click();
-    });
-    nowPlayingListEl.appendChild(chip);
-  });
-}
-
-// Gán 1 file âm thanh mới cho 1 pad (dùng chung cho cả đổi từng pad lẻ
-// và tải hàng loạt nhiều pad cùng lúc). Không đổi tên/icon của pad,
-// chỉ thay nội dung âm thanh bên trong.
-function setPadSound(pad, file){
-  const state = padState[pad.id];
-  const btn = document.getElementById('btn-' + pad.id);
-  const currentFileEl = document.getElementById('current-' + pad.id);
-  if(!state || !btn || !currentFileEl) return;
-
-  // Dừng âm thanh cũ nếu đang phát trước khi thay file mới
-  state.audio.pause();
-  btn.classList.remove('playing');
-
-  const objectUrl = URL.createObjectURL(file);
-  state.audio = new Audio(objectUrl);
-  state.fileName = file.name;
-  currentFileEl.textContent = file.name;
-
-  // Gắn lại sự kiện 'ended' cho audio mới
-  state.audio.addEventListener('ended', () => {
-    btn.classList.remove('playing');
-    updateNowPlayingList();
-  });
-
-  updateNowPlayingList(); // Pad vừa đổi nhạc có thể vừa bị dừng -> cập nhật lại thanh "Đang phát"
-}
-
-// Tạo DOM + gắn toàn bộ sự kiện cho 1 pad (dùng chung cho lần vẽ đầu tiên
-// VÀ khi thêm pad mới qua "Thêm nhiều Pad" sau này). Chỉ tạo/append phần tử
-// của riêng pad này - không đụng tới các pad khác đang có trên lưới.
-function createPadElement(pad, index){
-  // Tạo đối tượng Audio riêng cho pad (phát song song với nhạc nền)
-  const audio = pad.file ? new Audio(pad.file) : new Audio();
-  padState[pad.id] = { audio: audio, fileName: pad.file };
-
-  const shortcutKey = padShortcuts[index] || '';
-
-  const cell = document.createElement('div');
-  cell.className = 'pad-cell';
-  cell.innerHTML = `
-    <button class="pad-btn" id="btn-${pad.id}" style="--pad-color:${pad.color}">
-      ${shortcutKey ? `<span class="pad-key">${shortcutKey}</span>` : ''}
-      <span class="pad-icon">${pad.icon}</span>
-      <span class="pad-label">${pad.label}</span>
-    </button>
-    <div class="pad-file-row">
-      <label class="pad-file-label" for="file-${pad.id}">🔄 Đổi âm thanh</label>
-      <input type="file" class="pad-file-input" id="file-${pad.id}" accept="audio/*">
-    </div>
-    <div class="pad-current-file" id="current-${pad.id}">${pad.file ? pad.file : 'Chưa có âm thanh'}</div>
-  `;
-
-  const btn = cell.querySelector(`#btn-${pad.id}`);
-  const fileInput = cell.querySelector(`#file-${pad.id}`);
-  const currentFileEl = cell.querySelector(`#current-${pad.id}`);
-
-  // Bấm vào Pad: phát nếu đang dừng, dừng nếu đang phát (toggle)
-  btn.addEventListener('click', () => {
-    const state = padState[pad.id];
-    const a = state.audio;
-
-    if(a.paused){
-      // Phát từ đầu, không ảnh hưởng tới nhạc nền hay các pad khác
-      a.currentTime = 0;
-      a.play().catch(() => {
-        currentFileEl.textContent = "Không tìm thấy: " + state.fileName;
-      });
-      btn.classList.add('playing');
-    } else {
-      // Đang chạy -> bấm lại để dừng: dim (giảm dần âm lượng) 0.5s rồi mới tắt hẳn
-      const originalVolume = a.volume;
-      fadeOutAndStop(a, 500, () => {
-        a.volume = originalVolume;
-        btn.classList.remove('playing');
-        updateNowPlayingList();
-      });
-    }
-    updateNowPlayingList(); // Cập nhật ngay thanh "Đang phát" phía dưới
-  });
-
-  // Khi âm thanh Pad tự kết thúc -> tắt hiệu ứng LED glow
-  audio.addEventListener('ended', () => {
-    btn.classList.remove('playing');
-    updateNowPlayingList();
-  });
-
-  // Tính năng đổi file âm thanh cho từng Pad (Import / Custom)
-  fileInput.addEventListener('click', (e) => {
-    e.stopPropagation(); // Không cho sự kiện nổi bọt lên nút Pad
-  });
-  fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
-    setPadSound(pad, file);
-    fileInput.value = '';
-  });
-
-  return cell;
-}
-
-// Render toàn bộ nút Pad ra giao diện (gộp chung 1 lưới, không chia tab)
-function renderPads(){
-  padGrid.innerHTML = '';
-  padData.forEach((pad, index) => {
-    padGrid.appendChild(createPadElement(pad, index));
-  });
-}
-
-renderPads();
-updateNowPlayingList(); // Khởi tạo thanh "Đang phát" (ban đầu chưa có gì chạy)
-
-// Nút "Dừng tất cả Pad": tắt nhanh mọi âm thanh Pad đang chạy cùng lúc
-const stopAllBtn = document.getElementById('btn-stop-all-pads');
-stopAllBtn.addEventListener('click', () => {
-  Object.keys(padState).forEach(id => {
-    const state = padState[id];
-    const btn = document.getElementById('btn-' + id);
-    if(!state.audio.paused){
-      // Đang phát -> dim (giảm dần âm lượng) 0.5s rồi mới tắt hẳn
-      const originalVolume = state.audio.volume;
-      fadeOutAndStop(state.audio, 500, () => {
-        state.audio.volume = originalVolume;
-        if(btn) btn.classList.remove('playing');
-        updateNowPlayingList();
-      });
-    } else {
-      state.audio.currentTime = 0;
-    }
-  });
-  updateNowPlayingList();
-});
-
-// Tính năng "Thêm nhiều Pad cùng lúc": chọn nhiều file 1 lần -> mỗi file
-// tạo ra 1 PAD MỚI nối tiếp phía dưới các pad hiện có (KHÔNG ghi đè pad cũ).
-const bulkPadInput = document.getElementById('bulk-pad-upload');
-const bulkStatusEl = document.getElementById('bulk-status');
-bulkPadInput.addEventListener('change', (e) => {
-  const files = Array.from(e.target.files);
-  if(files.length === 0) return;
-
-  const firstNewNumber = padData.length + 1;
-  let lastCell = null;
-
-  files.forEach(file => {
-    const newIndex = padData.length; // Vị trí mới = cuối danh sách hiện tại
-    const newPad = {
-      id: 'pad' + (newIndex + 1),
-      label: file.name.replace(/\.[^/.]+$/, ""), // Tên pad lấy theo tên file
-      icon: '🎵',
-      file: null, // Sẽ gán âm thanh thật ngay bên dưới bằng setPadSound
-      color: neonPalette[newIndex % neonPalette.length]
-    };
-    padData.push(newPad); // Thêm vào cuối mảng, không đụng tới pad cũ
-
-    const cell = createPadElement(newPad, newIndex);
-    padGrid.appendChild(cell); // Nối thêm xuống dưới lưới, không đè pad đang có
-    setPadSound(newPad, file); // Gán đúng file âm thanh vừa chọn cho pad mới này
-    lastCell = cell;
-  });
-
-  bulkStatusEl.textContent = `Đã thêm ${files.length} pad mới (Pad ${firstNewNumber} -> Pad ${padData.length}).`;
-  // Cuộn tới pad mới thêm cuối cùng để người dùng thấy ngay kết quả
-  if(lastCell) lastCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  // Tự xoá thông báo sau vài giây cho gọn giao diện
-  setTimeout(() => { bulkStatusEl.textContent = ''; }, 6000);
-
-  bulkPadInput.value = '';
-});
-
-// Phím tắt bàn phím cho Pad: bấm phím tương ứng = bấm nút Pad đó
-document.addEventListener('keydown', (e) => {
-  // Bỏ qua khi người dùng đang gõ chữ vào ô nhập liệu (tránh xung đột)
-  const ae = document.activeElement;
-  const isTyping = ae && (
-    ae.tagName === 'TEXTAREA' ||
-    (ae.tagName === 'INPUT' && !['range','checkbox','radio','file','button'].includes(ae.type))
-  );
-  if(isTyping) return;
-
-  const key = e.key.toUpperCase();
-  const index = padShortcuts.indexOf(key);
-  if(index === -1) return;
-
-  const pad = padData[index];
-  if(!pad) return;
-
-  const btn = document.getElementById('btn-' + pad.id);
-  if(btn){
-    btn.click(); // Giả lập bấm nút Pad tương ứng (dùng lại đúng logic toggle)
-    e.preventDefault();
-  }
-});
-
+document.getElementById('theme-toggle').onclick = function(){
+  applyTheme(effectiveTheme()==='dark' ? 'light' : 'dark');
+};
 </script>
 </body>
 </html>
